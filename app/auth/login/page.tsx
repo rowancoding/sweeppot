@@ -1,11 +1,15 @@
 "use client";
 
+import { Suspense } from "react";
 import { useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { login } from "@/app/auth/actions";
 
-export default function LoginPage() {
+function LoginForm() {
   const [state, action, pending] = useActionState(login, null);
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "";
 
   return (
     <div className="auth-wrap">
@@ -17,6 +21,7 @@ export default function LoginPage() {
         </div>
 
         <form action={action}>
+          {next && <input type="hidden" name="next" value={next} />}
           <div className="auth-body">
             {state?.error && (
               <div className="auth-global-err">{state.error}</div>
@@ -55,7 +60,9 @@ export default function LoginPage() {
             </button>
             <div className="auth-link">
               Don&apos;t have an account?{" "}
-              <Link href="/auth/signup">Create one</Link>
+              <Link href={next ? `/auth/signup?next=${encodeURIComponent(next)}` : "/auth/signup"}>
+                Create one
+              </Link>
             </div>
           </div>
         </form>
@@ -69,5 +76,13 @@ export default function LoginPage() {
         ☀️
       </button>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

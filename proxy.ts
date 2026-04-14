@@ -31,12 +31,13 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isAuthRoute =
-    pathname.startsWith("/auth/login") ||
-    pathname.startsWith("/auth/signup");
 
-  // Unauthenticated: redirect to /auth/login (except on auth routes)
-  if (!user && !isAuthRoute) {
+  // Routes that don't require authentication
+  const isAuthRoute   = pathname.startsWith("/auth/login") || pathname.startsWith("/auth/signup");
+  const isPublicRoute = pathname.startsWith("/join/");
+
+  // Unauthenticated: redirect to /auth/login (except on auth/public routes)
+  if (!user && !isAuthRoute && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);

@@ -9,6 +9,7 @@ export async function login(
 ): Promise<{ error: string }> {
   const email    = formData.get("email")    as string;
   const password = formData.get("password") as string;
+  const next     = (formData.get("next")    as string | null) || "/";
 
   if (!email || !password) {
     return { error: "Email and password are required." };
@@ -21,7 +22,7 @@ export async function login(
     return { error: error.message };
   }
 
-  redirect("/");
+  redirect(next);
 }
 
 export async function signup(
@@ -32,6 +33,7 @@ export async function signup(
   const password    = formData.get("password")     as string;
   const displayName = formData.get("display_name") as string;
   const dobStr      = formData.get("date_of_birth") as string;
+  const next        = (formData.get("next")         as string | null) || "/";
 
   if (!email || !password || !displayName || !dobStr) {
     return { error: "All fields are required." };
@@ -62,7 +64,7 @@ export async function signup(
     return { error: error.message };
   }
 
-  redirect("/");
+  redirect(next);
 }
 
 export async function logout() {

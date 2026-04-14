@@ -1,11 +1,15 @@
 "use client";
 
+import { Suspense } from "react";
 import { useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signup } from "@/app/auth/actions";
 
-export default function SignupPage() {
+function SignupForm() {
   const [state, action, pending] = useActionState(signup, null);
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") || "";
 
   // Max date = 18 years ago today
   const maxDob = (() => {
@@ -26,6 +30,7 @@ export default function SignupPage() {
         </div>
 
         <form action={action}>
+          {next && <input type="hidden" name="next" value={next} />}
           <div className="auth-body">
             {state?.error && (
               <div className="auth-global-err">{state.error}</div>
@@ -95,7 +100,9 @@ export default function SignupPage() {
             </button>
             <div className="auth-link">
               Already have an account?{" "}
-              <Link href="/auth/login">Sign in</Link>
+              <Link href={next ? `/auth/login?next=${encodeURIComponent(next)}` : "/auth/login"}>
+                Sign in
+              </Link>
             </div>
             <div
               className="auth-link"
@@ -116,5 +123,13 @@ export default function SignupPage() {
         ☀️
       </button>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   );
 }

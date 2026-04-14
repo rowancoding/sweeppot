@@ -27,6 +27,8 @@ create table if not exists public.pools (
   visibility        text        not null default 'private', -- 'private' | 'public'
   organiser_id      uuid        not null references public.users(id),
   expires_at        timestamptz,
+  invite_code       text        unique not null default lower(substr(replace(gen_random_uuid()::text,'-',''),1,8)),
+  draw_mode         text        not null default 'automatic', -- 'automatic' | 'host' | 'live'
   created_at        timestamptz not null default now()
 );
 
