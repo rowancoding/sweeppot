@@ -385,64 +385,71 @@ export default function SweeppotApp() {
     const supabase = createClient();
 
     async function loadUserAndPools() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsLoggedIn(false);
-        return;
-      }
-      setIsLoggedIn(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setIsLoggedIn(false);
+          setLivePools([]);
+          return;
+        }
+        setIsLoggedIn(true);
 
-      const meta = user.user_metadata;
-      setDisplayName(meta?.display_name || user.email?.split("@")[0] || "");
+        const meta = user.user_metadata;
+        setDisplayName(meta?.display_name || user.email?.split("@")[0] || "");
 
-      // Fetch pools where the user is a participant
-      const { data: participants } = await supabase
-        .from("participants")
-        .select(`
-          pool_id,
-          paid,
-          pools (
-            id, name, comp, status,
-            bet_aud, player_count,
-            expires_at,
-            participants (count)
-          )
-        `)
-        .eq("user_id", user.id);
+        // Fetch pools where the user is a participant
+        const { data: participantRows } = await supabase
+          .from("participants")
+          .select(`
+            pool_id,
+            paid,
+            pools (
+              id, name, comp, status,
+              bet_aud, player_count,
+              expires_at,
+              participants (count)
+            )
+          `)
+          .eq("user_id", user.id);
 
-      if (participants && participants.length > 0) {
-        const compLabels: Record<string, string> = {
-          wc2026:    "FIFA World Cup 2026",
-          ucl2526:   "Champions League",
-          euros2028: "UEFA Euros 2028",
-        };
-        const compIcons: Record<string, string> = {
-          wc2026: "🌍", ucl2526: "⭐", euros2028: "🏆",
-        };
-        const mapped: DemoPool[] = participants.map((p: any) => {
-          const pool = p.pools;
-          const filled = pool.participants?.[0]?.count ?? 0;
-          const expiry = pool.expires_at ? new Date(pool.expires_at) : null;
-          const daysLeft = expiry
-            ? Math.max(0, Math.ceil((expiry.getTime() - Date.now()) / 864e5))
-            : 0;
-          return {
-            id:           pool.id,
-            name:         pool.name,
-            comp:         pool.comp,
-            compLabel:    compLabels[pool.comp] ?? pool.comp,
-            icon:         compIcons[pool.comp]  ?? "🏆",
-            status:       pool.status as "waiting" | "active" | "complete",
-            spotsTotal:   pool.player_count,
-            spotsFilled:  filled,
-            daysLeft,
-            pot:          pool.bet_aud * pool.player_count,
-            betAud:       pool.bet_aud,
+        if (participantRows && participantRows.length > 0) {
+          const compLabels: Record<string, string> = {
+            wc2026:    "FIFA World Cup 2026",
+            ucl2526:   "Champions League",
+            euros2028: "UEFA Euros 2028",
           };
-        });
-        setLivePools(mapped);
-      } else {
-        setLivePools([]); // no pools yet
+          const compIcons: Record<string, string> = {
+            wc2026: "🌍", ucl2526: "⭐", euros2028: "🏆",
+          };
+          const mapped: DemoPool[] = participantRows.map((p: any) => {
+            const pool = p.pools;
+            const filled = pool.participants?.[0]?.count ?? 0;
+            const expiry = pool.expires_at ? new Date(pool.expires_at) : null;
+            const daysLeft = expiry
+              ? Math.max(0, Math.ceil((expiry.getTime() - Date.now()) / 864e5))
+              : 0;
+            return {
+              id:           pool.id,
+              name:         pool.name,
+              comp:         pool.comp,
+              compLabel:    compLabels[pool.comp] ?? pool.comp,
+              icon:         compIcons[pool.comp]  ?? "🏆",
+              status:       pool.status as "waiting" | "active" | "complete",
+              spotsTotal:   pool.player_count,
+              spotsFilled:  filled,
+              daysLeft,
+              pot:          pool.bet_aud * pool.player_count,
+              betAud:       pool.bet_aud,
+            };
+          });
+          setLivePools(mapped);
+        } else {
+          setLivePools([]);
+        }
+      } catch {
+        // Network/auth error — show empty state rather than infinite loading
+        setIsLoggedIn(prev => prev === null ? false : prev);
+        setLivePools(prev => prev === null ? [] : prev);
       }
     }
 
@@ -584,6 +591,19 @@ export default function SweeppotApp() {
                   </button>
                   <button className="lp-btn-ghost" onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })}>See how it works ↓</button>
                 </div>
+                {isLoggedIn && (
+                  <div className="lp-hero-nav">
+                    <button className="lp-hero-nav-btn" onClick={() => document.getElementById("my-pools-section")?.scrollIntoView({ behavior: "smooth" })}>
+                      🏆 My Pools
+                    </button>
+                    <button className="lp-hero-nav-btn" onClick={() => document.getElementById("invited-pools-section")?.scrollIntoView({ behavior: "smooth" })}>
+                      ✉️ Invited Pools
+                    </button>
+                    <button className="lp-hero-nav-btn" onClick={showInviteDemo}>
+                      🎡 Try Demo
+                    </button>
+                  </div>
+                )}
                 <div className="lp-stats">
                   <div className="lp-stat"><div className="lp-stat-n">$0</div><div className="lp-stat-l">Lost to no-shows</div></div>
                   <div className="lp-stat-div" />
@@ -620,16 +640,14 @@ export default function SweeppotApp() {
                 </div>
                 <button className="nav-btn hi" onClick={() => window.location.href = "/pool/create"} style={{ alignSelf: "center" }}>+ Create Pool</button>
               </div>
-              {livePools === null ? (
-                <div style={{ padding: "1.5rem 0", color: "var(--muted)", fontSize: "0.82rem" }}>Loading your pools…</div>
-              ) : livePools.length > 0 ? (
+              {livePools !== null && livePools.length > 0 ? (
                 <div className="pools-grid">{livePools.map(p => <PoolCard key={p.id} pool={p} />)}</div>
               ) : (
                 <div className="lp-empty-state">
                   <div className="lp-empty-icon">🏆</div>
-                  <div className="lp-empty-msg">No pools yet</div>
+                  <div className="lp-empty-msg">You&apos;re not in any pools yet</div>
                   <div className="lp-empty-sub">Create your first sweepstake or wait to be invited by a friend.</div>
-                  <button className="lp-btn-primary" style={{ marginTop: "1rem" }} onClick={() => window.location.href = "/pool/create"}>Create a Sweepstake →</button>
+                  <button className="lp-btn-primary" style={{ marginTop: "1rem" }} onClick={() => window.location.href = "/pool/create"}>+ Create New Pool</button>
                 </div>
               )}
             </div>
@@ -644,6 +662,7 @@ export default function SweeppotApp() {
                   <h2 className="lp-section-title" style={{ marginBottom: 0 }}>Invited Pools</h2>
                 </div>
               </div>
+              {INVITED_POOLS.length > 0 ? (
               <div className="inv-list">
                 {INVITED_POOLS.map(p => (
                   <div key={p.id} className="inv-row">
@@ -661,6 +680,13 @@ export default function SweeppotApp() {
                   </div>
                 ))}
               </div>
+              ) : (
+                <div className="lp-empty-state">
+                  <div className="lp-empty-icon">✉️</div>
+                  <div className="lp-empty-msg">No pending invites</div>
+                  <div className="lp-empty-sub">When someone invites you to a pool, it will appear here.</div>
+                </div>
+              )}
             </div>
           )}
 

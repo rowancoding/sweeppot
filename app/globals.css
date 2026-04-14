@@ -245,7 +245,10 @@ body.light-mode .cd-num { color: var(--green); }
 .lp-h1 { font-family: var(--font-bebas-neue), sans-serif; font-size: 3rem; line-height: 1.08; letter-spacing: 0.03em; color: var(--text); margin-bottom: 1rem; }
 .lp-accent { color: var(--green); }
 .lp-sub { font-size: 0.87rem; color: var(--muted); line-height: 1.75; margin-bottom: 1.5rem; max-width: 480px; }
-.lp-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+.lp-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.lp-hero-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+.lp-hero-nav-btn { background: rgba(198,241,53,0.07); border: 1px solid rgba(198,241,53,0.25); color: var(--text); font-family: var(--font-barlow-condensed), sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; padding: 0.35rem 0.85rem; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.lp-hero-nav-btn:hover { background: rgba(198,241,53,0.14); border-color: rgba(198,241,53,0.5); }
 .lp-btn-primary { background: var(--green); color: var(--dark); border: none; padding: 0.75rem 1.8rem; font-family: var(--font-barlow-condensed), sans-serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; }
 .lp-btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
 body.light-mode .lp-btn-primary { color: #fff; }

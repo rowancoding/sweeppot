@@ -28,9 +28,6 @@ export const metadata: Metadata = {
   title: "Sweeppot",
   description:
     "Peer-to-peer football sweepstakes — escrowed, automated, fair.",
-  icons: {
-    icon: "/favicon.svg",
-  },
 };
 
 export default function RootLayout({
