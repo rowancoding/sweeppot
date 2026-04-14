@@ -34,7 +34,7 @@ export async function proxy(request: NextRequest) {
 
   // Routes that don't require authentication
   const isAuthRoute   = pathname.startsWith("/auth/login") || pathname.startsWith("/auth/signup");
-  const isPublicRoute = pathname.startsWith("/join/");
+  const isPublicRoute = pathname === "/" || pathname.startsWith("/join/");
 
   // Unauthenticated: redirect to /auth/login (except on auth/public routes)
   if (!user && !isAuthRoute && !isPublicRoute) {

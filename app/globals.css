@@ -278,6 +278,12 @@ body.light-mode .lp-btn-primary { color: #fff; }
 .lp-section-alt { background: var(--dark2); }
 .lp-section-tag { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 0.5rem; }
 .lp-section-title { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.9rem; letter-spacing: 0.04em; color: var(--text); margin-bottom: 1.8rem; }
+.lp-section-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.8rem; }
+.lp-dashboard-section { max-width: 100%; }
+.lp-empty-state { display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1rem; text-align: center; }
+.lp-empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.lp-empty-msg { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.4rem; letter-spacing: 0.04em; color: var(--text); margin-bottom: 0.3rem; }
+.lp-empty-sub { font-size: 0.8rem; color: var(--muted); max-width: 300px; }
 /* How it works steps */
 .lp-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative; }
 .lp-steps::before { content: ''; position: absolute; top: 21px; left: 8%; right: 8%; height: 1px; background: var(--border); }

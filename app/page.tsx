@@ -367,7 +367,7 @@ function PoolCard({ pool }: { pool: DemoPool }) {
 // Main component
 // ─────────────────────────────────────────────
 export default function SweeppotApp() {
-  const [screen, setScreen]           = useState<Screen>("home");
+  const [screen, setScreen]           = useState<Screen>("landing");
   const [tab, setTab]                 = useState<Tab>("myPools");
   const [lightMode, setLightMode]     = useState(false);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -376,6 +376,7 @@ export default function SweeppotApp() {
   const [countdown, setCountdown]     = useState({ d:"07", h:"23", m:"59", s:"59" });
   const [displayName, setDisplayName] = useState<string>("");
   const [livePools, setLivePools]     = useState<DemoPool[] | null>(null);
+  const [isLoggedIn, setIsLoggedIn]   = useState<boolean | null>(null);
   const cdTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const howRef  = useRef<HTMLDivElement>(null);
 
@@ -385,7 +386,11 @@ export default function SweeppotApp() {
 
     async function loadUserAndPools() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return; // middleware already redirects — just guard
+      if (!user) {
+        setIsLoggedIn(false);
+        return;
+      }
+      setIsLoggedIn(true);
 
       const meta = user.user_metadata;
       setDisplayName(meta?.display_name || user.email?.split("@")[0] || "");
@@ -528,13 +533,24 @@ export default function SweeppotApp() {
     <>
       {/* ── Nav bar ── */}
       <nav className="nav-bar">
-        <div className="nav-logo" onClick={() => screen !== "landing" ? setScreen("landing") : window.scrollTo({ top: 0, behavior: "smooth" })}>
+        <div className="nav-logo" onClick={() => { setScreen("landing"); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
           Sweeppot
         </div>
         <div className="nav-right">
-          <button className="nav-btn" onClick={showInviteDemo}>Try Demo</button>
-          <button className="nav-btn hi" onClick={() => window.location.href = "/pool/create"}>+ Create Pool</button>
-          <form action={logout}><button className="nav-btn" type="submit" style={{ fontSize: "0.72rem" }}>Sign Out</button></form>
+          {isLoggedIn ? (
+            <>
+              <button className="nav-btn" onClick={() => { setScreen("landing"); window.scrollTo({ top: 0, behavior: "smooth" }); }}>My Pools</button>
+              <button className="nav-btn" onClick={() => { setScreen("landing"); setTimeout(() => document.getElementById("invited-pools-section")?.scrollIntoView({ behavior: "smooth" }), 50); }}>Invited Pools</button>
+              <button className="nav-btn" onClick={showInviteDemo}>Try Demo</button>
+              <button className="nav-btn hi" onClick={() => window.location.href = "/pool/create"}>+ Create Pool</button>
+              <form action={logout}><button className="nav-btn" type="submit" style={{ fontSize: "0.72rem" }}>Sign Out</button></form>
+            </>
+          ) : (
+            <>
+              <button className="nav-btn" onClick={showInviteDemo}>Try Demo</button>
+              <a className="nav-btn" href="/auth/login" style={{ textDecoration: "none" }}>Sign In</a>
+            </>
+          )}
         </div>
       </nav>
 
@@ -563,7 +579,9 @@ export default function SweeppotApp() {
                 <h1 className="lp-h1">The <span className="lp-accent">sweepstake</span><br />your group actually finishes.</h1>
                 <p className="lp-sub">No spreadsheets. No chasing payments. No arguments about who owes what. Sweeppot runs your football sweepstake end-to-end — everyone pays up front, teams are drawn fairly, and the winner collects automatically.</p>
                 <div className="lp-actions">
-                  <button className="lp-btn-primary" onClick={() => window.location.href = "/pool/create"}>Start a Sweepstake →</button>
+                  <button className="lp-btn-primary" onClick={() => window.location.href = isLoggedIn ? "/pool/create" : "/auth/signup"}>
+                    {isLoggedIn ? "Create a Sweepstake →" : "Get Started →"}
+                  </button>
                   <button className="lp-btn-ghost" onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })}>See how it works ↓</button>
                 </div>
                 <div className="lp-stats">
@@ -591,6 +609,60 @@ export default function SweeppotApp() {
               </div>
             </div>
           </div>
+
+          {/* ── My Pools (logged-in only) ── */}
+          {isLoggedIn && (
+            <div className="lp-section lp-dashboard-section" id="my-pools-section">
+              <div className="lp-section-hdr">
+                <div>
+                  <div className="lp-section-tag">Your sweepstakes</div>
+                  <h2 className="lp-section-title" style={{ marginBottom: 0 }}>My Pools</h2>
+                </div>
+                <button className="nav-btn hi" onClick={() => window.location.href = "/pool/create"} style={{ alignSelf: "center" }}>+ Create Pool</button>
+              </div>
+              {livePools === null ? (
+                <div style={{ padding: "1.5rem 0", color: "var(--muted)", fontSize: "0.82rem" }}>Loading your pools…</div>
+              ) : livePools.length > 0 ? (
+                <div className="pools-grid">{livePools.map(p => <PoolCard key={p.id} pool={p} />)}</div>
+              ) : (
+                <div className="lp-empty-state">
+                  <div className="lp-empty-icon">🏆</div>
+                  <div className="lp-empty-msg">No pools yet</div>
+                  <div className="lp-empty-sub">Create your first sweepstake or wait to be invited by a friend.</div>
+                  <button className="lp-btn-primary" style={{ marginTop: "1rem" }} onClick={() => window.location.href = "/pool/create"}>Create a Sweepstake →</button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Invited Pools (logged-in only) ── */}
+          {isLoggedIn && (
+            <div className="lp-section lp-dashboard-section lp-section-alt" id="invited-pools-section">
+              <div className="lp-section-hdr">
+                <div>
+                  <div className="lp-section-tag">Open invitations</div>
+                  <h2 className="lp-section-title" style={{ marginBottom: 0 }}>Invited Pools</h2>
+                </div>
+              </div>
+              <div className="inv-list">
+                {INVITED_POOLS.map(p => (
+                  <div key={p.id} className="inv-row">
+                    <div style={{ width:38,height:38,borderRadius:"50%",background:"rgba(198,241,53,0.1)",border:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",flexShrink:0 }}>✉️</div>
+                    <div className="inv-info">
+                      <div className="inv-pool-name">{p.name}</div>
+                      <div className="inv-meta">{p.comp} · {p.total} players · ${p.pot} pot</div>
+                      <div className="inv-from">Invited by {p.from} · {p.daysLeft}d left to join</div>
+                    </div>
+                    <div className="inv-stats">
+                      <div className="inv-pot">${p.pot}</div>
+                      <div className="inv-spots">{p.spots} spot{p.spots !== 1 ? "s" : ""} left</div>
+                      <div className="inv-badge">${p.buyin} AUD</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* How it works */}
           <div className="lp-section" ref={howRef} id="lp-how">
@@ -653,7 +725,7 @@ export default function SweeppotApp() {
             <h2 className="lp-cta-title">Ready for World Cup 2026?</h2>
             <p className="lp-cta-sub">Set up your sweepstake now — the tournament kicks off June 2026.</p>
             <div className="lp-cta-btns">
-              <button className="lp-btn-primary" onClick={() => setScreen("home")}>Create a Sweepstake →</button>
+              <button className="lp-btn-primary" onClick={() => window.location.href = isLoggedIn ? "/pool/create" : "/auth/signup"}>Create a Sweepstake →</button>
               <button className="lp-btn-demo" onClick={showInviteDemo}>🎡 Try a Demo</button>
             </div>
           </div>
