@@ -28,6 +28,10 @@ export const metadata: Metadata = {
   title: "Sweeppot",
   description:
     "Peer-to-peer football sweepstakes — escrowed, automated, fair.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
