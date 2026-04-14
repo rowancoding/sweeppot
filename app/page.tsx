@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createClient } from "@/lib/supabase";
+import { logout } from "@/app/auth/actions";
 
 // ─────────────────────────────────────────────
 // Types
@@ -364,18 +366,83 @@ function PoolCard({ pool }: { pool: DemoPool }) {
 // ─────────────────────────────────────────────
 // Main component
 // ─────────────────────────────────────────────
-const isLoggedIn = true; // TODO: replace with Supabase auth in Session 2
-
 export default function SweeppotApp() {
-  const [screen, setScreen]           = useState<Screen>(isLoggedIn ? "home" : "landing");
+  const [screen, setScreen]           = useState<Screen>("home");
   const [tab, setTab]                 = useState<Tab>("myPools");
   const [lightMode, setLightMode]     = useState(false);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [poolBetAud, setPoolBetAud]   = useState(20);
   const [poolPlayerCount, setPoolPlayerCount] = useState(8);
   const [countdown, setCountdown]     = useState({ d:"07", h:"23", m:"59", s:"59" });
+  const [displayName, setDisplayName] = useState<string>("");
+  const [livePools, setLivePools]     = useState<DemoPool[] | null>(null);
   const cdTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const howRef  = useRef<HTMLDivElement>(null);
+
+  // ── Fetch user + pools from Supabase ─────────────────────
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function loadUserAndPools() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return; // middleware already redirects — just guard
+
+      const meta = user.user_metadata;
+      setDisplayName(meta?.display_name || user.email?.split("@")[0] || "");
+
+      // Fetch pools where the user is a participant
+      const { data: participants } = await supabase
+        .from("participants")
+        .select(`
+          pool_id,
+          paid,
+          pools (
+            id, name, comp, status,
+            bet_aud, player_count,
+            expires_at,
+            participants (count)
+          )
+        `)
+        .eq("user_id", user.id);
+
+      if (participants && participants.length > 0) {
+        const compLabels: Record<string, string> = {
+          wc2026:    "FIFA World Cup 2026",
+          ucl2526:   "Champions League",
+          euros2028: "UEFA Euros 2028",
+        };
+        const compIcons: Record<string, string> = {
+          wc2026: "🌍", ucl2526: "⭐", euros2028: "🏆",
+        };
+        const mapped: DemoPool[] = participants.map((p: any) => {
+          const pool = p.pools;
+          const filled = pool.participants?.[0]?.count ?? 0;
+          const expiry = pool.expires_at ? new Date(pool.expires_at) : null;
+          const daysLeft = expiry
+            ? Math.max(0, Math.ceil((expiry.getTime() - Date.now()) / 864e5))
+            : 0;
+          return {
+            id:           pool.id,
+            name:         pool.name,
+            comp:         pool.comp,
+            compLabel:    compLabels[pool.comp] ?? pool.comp,
+            icon:         compIcons[pool.comp]  ?? "🏆",
+            status:       pool.status as "waiting" | "active" | "complete",
+            spotsTotal:   pool.player_count,
+            spotsFilled:  filled,
+            daysLeft,
+            pot:          pool.bet_aud * pool.player_count,
+            betAud:       pool.bet_aud,
+          };
+        });
+        setLivePools(mapped);
+      } else {
+        setLivePools([]); // no pools yet
+      }
+    }
+
+    loadUserAndPools();
+  }, []);
 
   // Expose goHome for overlay close buttons
   const goHome = useCallback(() => {
@@ -467,6 +534,7 @@ export default function SweeppotApp() {
         <div className="nav-right">
           <button className="nav-btn" onClick={showInviteDemo}>Try Demo</button>
           <button className="nav-btn hi" onClick={() => window.location.href = "/pool/create"}>+ Create Pool</button>
+          <form action={logout}><button className="nav-btn" type="submit" style={{ fontSize: "0.72rem" }}>Sign Out</button></form>
         </div>
       </nav>
 
@@ -606,10 +674,16 @@ export default function SweeppotApp() {
         <div className="content">
           <div className="home-hero">
             <div className="home-greeting">
-              <h1>Welcome back 👋</h1>
-              <p>You have 1 active pool, 1 waiting for players, and 2 pending invites.</p>
+              <h1>Welcome back{displayName ? `, ${displayName}` : ""} 👋</h1>
+              <p>
+                {livePools === null
+                  ? "Loading your pools…"
+                  : livePools.length === 0
+                  ? "You have no pools yet. Create one or try the demo."
+                  : `You have ${livePools.filter(p => p.status === "active").length} active pool${livePools.filter(p => p.status === "active").length !== 1 ? "s" : ""}, ${livePools.filter(p => p.status === "waiting").length} waiting for players.`}
+              </p>
             </div>
-            <button className="btn-create">+ Create New Pool</button>
+            <button className="btn-create" onClick={() => window.location.href = "/pool/create"}>+ Create New Pool</button>
           </div>
           <div className="home-tabs">
             {([ ["myPools","My Pools"], ["results","Match Results"], ["news","Football News"], ["browse","Invited Pools"] ] as const).map(([key, label]) => (
@@ -620,7 +694,13 @@ export default function SweeppotApp() {
           </div>
           {/* My Pools */}
           <div className={`tab-pane${tab === "myPools" ? " active" : ""}`}>
-            <div className="pools-grid">{DEMO_POOLS.map(p => <PoolCard key={p.id} pool={p} />)}</div>
+            {livePools === null ? (
+              <div style={{ padding: "2rem", color: "var(--muted)", fontSize: "0.82rem" }}>Loading…</div>
+            ) : livePools.length > 0 ? (
+              <div className="pools-grid">{livePools.map(p => <PoolCard key={p.id} pool={p} />)}</div>
+            ) : (
+              <div className="pools-grid">{DEMO_POOLS.map(p => <PoolCard key={p.id} pool={p} />)}</div>
+            )}
           </div>
           {/* Match Results */}
           <div className={`tab-pane${tab === "results" ? " active" : ""}`}>

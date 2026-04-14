@@ -333,6 +333,29 @@ body.light-mode .lp-btn-primary { color: #fff; }
   .mt-toggle-wrap { align-items: flex-start; }
 }
 
+/* ── AUTH PAGES ── */
+.auth-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; background: var(--dark); }
+.auth-card { background: var(--card); border: 1px solid var(--border); width: 100%; max-width: 420px; position: relative; }
+.auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--green), transparent); }
+.auth-logo { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.5rem; color: var(--green); letter-spacing: 0.08em; text-align: center; padding: 1.6rem 2rem 0; }
+.auth-hdr { padding: 0.6rem 2rem 1.4rem; border-bottom: 1px solid var(--border); }
+.auth-title { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.8rem; color: var(--text); letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+.auth-sub { font-size: 0.79rem; color: var(--muted); line-height: 1.5; }
+.auth-body { padding: 1.6rem 2rem; display: flex; flex-direction: column; gap: 1.1rem; }
+.auth-field { display: flex; flex-direction: column; gap: 0.4rem; }
+.auth-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); }
+.auth-label span { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+.auth-err { font-size: 0.72rem; color: var(--red); margin-top: 0.2rem; }
+.auth-ftr { padding: 1rem 2rem 1.6rem; display: flex; flex-direction: column; gap: 0.8rem; }
+.auth-btn { background: var(--green); color: var(--dark); border: none; padding: 0.78rem 2rem; font-family: var(--font-barlow-condensed), sans-serif; font-weight: 700; font-size: 0.92rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); transition: all 0.2s; width: 100%; }
+.auth-btn:hover:not(:disabled) { filter: brightness(1.1); }
+.auth-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+body.light-mode .auth-btn { color: #fff; }
+.auth-link { font-size: 0.79rem; color: var(--muted); text-align: center; }
+.auth-link a { color: var(--green); text-decoration: none; font-weight: 600; }
+.auth-link a:hover { text-decoration: underline; }
+.auth-global-err { background: rgba(255,82,82,0.08); border: 1px solid rgba(255,82,82,0.3); padding: 0.65rem 0.9rem; font-size: 0.8rem; color: var(--red); }
+
 /* ── ANIMATIONS ── */
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
 @keyframes cff { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
