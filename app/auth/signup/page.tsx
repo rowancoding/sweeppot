@@ -21,6 +21,9 @@ function SignupForm() {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
+        <div style={{ padding: "0.75rem 0 0" }}>
+          <Link href="/" className="nav-btn" style={{ fontSize: "0.72rem", padding: "0.32rem 0.8rem", textDecoration: "none" }}>← Home</Link>
+        </div>
         <div className="auth-logo">Sweeppot</div>
         <div className="auth-hdr">
           <div className="auth-title">Create Account</div>

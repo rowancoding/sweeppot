@@ -547,7 +547,7 @@ export default function SweeppotApp() {
           {isLoggedIn ? (
             <>
               <button className="nav-btn" onClick={() => { setScreen("landing"); window.scrollTo({ top: 0, behavior: "smooth" }); }}>My Pools</button>
-              <button className="nav-btn" onClick={() => { setScreen("landing"); setTimeout(() => document.getElementById("invited-pools-section")?.scrollIntoView({ behavior: "smooth" }), 50); }}>Invited Pools</button>
+              <button className="nav-btn" onClick={() => { setScreen("landing"); setTimeout(() => document.getElementById("invited-pools")?.scrollIntoView({ behavior: "smooth" }), 50); }}>Invited Pools</button>
               <button className="nav-btn" onClick={showInviteDemo}>Try Demo</button>
               <button className="nav-btn hi" onClick={() => window.location.href = "/pool/create"}>+ Create Pool</button>
               <form action={logout}><button className="nav-btn" type="submit" style={{ fontSize: "0.72rem" }}>Sign Out</button></form>
@@ -593,14 +593,11 @@ export default function SweeppotApp() {
                 </div>
                 {isLoggedIn && (
                   <div className="lp-hero-nav">
-                    <button className="lp-hero-nav-btn" onClick={() => document.getElementById("my-pools-section")?.scrollIntoView({ behavior: "smooth" })}>
+                    <button className="lp-hero-nav-btn" onClick={() => document.getElementById("my-pools")?.scrollIntoView({ behavior: "smooth" })}>
                       🏆 My Pools
                     </button>
-                    <button className="lp-hero-nav-btn" onClick={() => document.getElementById("invited-pools-section")?.scrollIntoView({ behavior: "smooth" })}>
+                    <button className="lp-hero-nav-btn" onClick={() => document.getElementById("invited-pools")?.scrollIntoView({ behavior: "smooth" })}>
                       ✉️ Invited Pools
-                    </button>
-                    <button className="lp-hero-nav-btn" onClick={showInviteDemo}>
-                      🎡 Try Demo
                     </button>
                   </div>
                 )}
@@ -632,7 +629,7 @@ export default function SweeppotApp() {
 
           {/* ── My Pools (logged-in only) ── */}
           {isLoggedIn && (
-            <div className="lp-section lp-dashboard-section" id="my-pools-section">
+            <div className="lp-section lp-dashboard-section" id="my-pools">
               <div className="lp-section-hdr">
                 <div>
                   <div className="lp-section-tag">Your sweepstakes</div>
@@ -655,7 +652,7 @@ export default function SweeppotApp() {
 
           {/* ── Invited Pools (logged-in only) ── */}
           {isLoggedIn && (
-            <div className="lp-section lp-dashboard-section lp-section-alt" id="invited-pools-section">
+            <div className="lp-section lp-dashboard-section lp-section-alt" id="invited-pools">
               <div className="lp-section-hdr">
                 <div>
                   <div className="lp-section-tag">Open invitations</div>
