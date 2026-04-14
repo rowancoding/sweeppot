@@ -546,7 +546,7 @@ export default function SweeppotApp() {
         <div className="nav-right">
           {isLoggedIn ? (
             <>
-              <button className="nav-btn" onClick={() => { setScreen("landing"); window.scrollTo({ top: 0, behavior: "smooth" }); }}>My Pools</button>
+              <button className="nav-btn" onClick={() => document.getElementById("my-pools")?.scrollIntoView({ behavior: "smooth" })}>My Pools</button>
               <button className="nav-btn" onClick={() => { setScreen("landing"); setTimeout(() => document.getElementById("invited-pools")?.scrollIntoView({ behavior: "smooth" }), 50); }}>Invited Pools</button>
               <button className="nav-btn" onClick={showInviteDemo}>Try Demo</button>
               <button className="nav-btn hi" onClick={() => window.location.href = "/pool/create"}>+ Create Pool</button>
@@ -554,6 +554,7 @@ export default function SweeppotApp() {
             </>
           ) : (
             <>
+              <button className="nav-btn" onClick={() => window.location.href = "/auth/login"}>My Pools</button>
               <button className="nav-btn" onClick={showInviteDemo}>Try Demo</button>
               <a className="nav-btn" href="/auth/login" style={{ textDecoration: "none" }}>Sign In</a>
             </>
@@ -590,18 +591,6 @@ export default function SweeppotApp() {
                     {isLoggedIn ? "Create a Sweepstake →" : "Get Started →"}
                   </button>
                   <button className="lp-btn-ghost" onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })}>See how it works ↓</button>
-                </div>
-                <div className="lp-hero-nav">
-                  <button
-                    className="lp-hero-nav-btn"
-                    onClick={() =>
-                      isLoggedIn
-                        ? document.getElementById("my-pools")?.scrollIntoView({ behavior: "smooth" })
-                        : (window.location.href = "/auth/login")
-                    }
-                  >
-                    🏆 My Pools
-                  </button>
                 </div>
                 <div className="lp-stats">
                   <div className="lp-stat"><div className="lp-stat-n">$0</div><div className="lp-stat-l">Lost to no-shows</div></div>
