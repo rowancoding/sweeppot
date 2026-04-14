@@ -543,6 +543,28 @@ input[type="range"]::-webkit-slider-thumb { appearance: none; width: 17px; heigh
 .pool-closed-banner { background: rgba(255,82,82,0.07); border: 1px solid rgba(255,82,82,0.25); padding: 0.85rem 1.2rem; font-size: 0.8rem; color: var(--red); margin: 1.5rem; }
 .sdot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.5s infinite; display: inline-block; margin-right: 0.38px; }
 
+/* ── TERMS PAGE ── */
+.terms-wrap { min-height: 100vh; background: var(--dark); }
+.terms-nav { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border); }
+.terms-body { max-width: 720px; margin: 0 auto; padding: 3rem 2rem 4rem; }
+.terms-hdr { margin-bottom: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+.terms-tag { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 0.4rem; }
+.terms-title { font-family: var(--font-bebas-neue), sans-serif; font-size: 2.8rem; letter-spacing: 0.04em; color: var(--text); margin: 0 0 0.3rem; }
+.terms-sub { font-size: 0.75rem; color: var(--muted); margin: 0; }
+.terms-sections { display: flex; flex-direction: column; gap: 1.8rem; }
+.terms-section { border-left: 2px solid var(--border); padding-left: 1.1rem; }
+.terms-section-title { font-family: var(--font-barlow-condensed), sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); margin-bottom: 0.5rem; }
+.terms-n { color: var(--green); }
+.terms-section-body { font-size: 0.85rem; color: var(--muted); line-height: 1.75; margin: 0; }
+.terms-footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center; }
+.lp-footer-links { margin-top: 0.75rem; display: flex; justify-content: center; gap: 1.2rem; }
+.lp-footer-link { font-size: 0.68rem; color: var(--muted); text-decoration: none; letter-spacing: 0.04em; }
+.lp-footer-link:hover { color: var(--green); }
+@media (max-width: 600px) {
+  .terms-body { padding: 2rem 1.2rem 3rem; }
+  .terms-title { font-size: 2rem; }
+}
+
 /* ── ANIMATIONS ── */
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
 @keyframes cff { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }

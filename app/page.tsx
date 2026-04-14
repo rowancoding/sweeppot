@@ -758,6 +758,9 @@ export default function SweeppotApp() {
             <div className="lp-footer-logo">Sweeppot</div>
             <div className="lp-footer-tagline">Peer-to-peer football sweepstakes — escrowed, automated, fair.</div>
             <div className="lp-footer-legal">Sweeppot facilitates private sweepstakes between invited participants. Entry fees are held securely in escrow and released automatically to the winner. A free entry option is available on all sweepstakes. 18+ only. Please participate responsibly.</div>
+            <div className="lp-footer-links">
+              <a href="/terms" className="lp-footer-link">Terms of Service</a>
+            </div>
           </div>
         </div>
       )}
