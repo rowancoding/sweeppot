@@ -591,16 +591,18 @@ export default function SweeppotApp() {
                   </button>
                   <button className="lp-btn-ghost" onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })}>See how it works ↓</button>
                 </div>
-                {isLoggedIn && (
-                  <div className="lp-hero-nav">
-                    <button className="lp-hero-nav-btn" onClick={() => document.getElementById("my-pools")?.scrollIntoView({ behavior: "smooth" })}>
-                      🏆 My Pools
-                    </button>
-                    <button className="lp-hero-nav-btn" onClick={() => document.getElementById("invited-pools")?.scrollIntoView({ behavior: "smooth" })}>
-                      ✉️ Invited Pools
-                    </button>
-                  </div>
-                )}
+                <div className="lp-hero-nav">
+                  <button
+                    className="lp-hero-nav-btn"
+                    onClick={() =>
+                      isLoggedIn
+                        ? document.getElementById("my-pools")?.scrollIntoView({ behavior: "smooth" })
+                        : (window.location.href = "/auth/login")
+                    }
+                  >
+                    🏆 My Pools
+                  </button>
+                </div>
                 <div className="lp-stats">
                   <div className="lp-stat"><div className="lp-stat-n">$0</div><div className="lp-stat-l">Lost to no-shows</div></div>
                   <div className="lp-stat-div" />
