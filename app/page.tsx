@@ -83,7 +83,66 @@ function launchConfetti() {
   }
 }
 
-function showDemoWinnerBanner(prize: number, team: Team) {
+const NARRATOR = [
+  {step:'Step 1 of 6', text:'8 friends join the pool and pay their entry fee upfront — funds are held securely until the tournament ends'},
+  {step:'Step 2 of 6', text:"Everyone's in. Teams are assigned randomly and fairly by Sweeppot — no one can influence the draw"},
+  {step:'Step 3 of 6', text:"Spin the wheel to reveal your team — it's pure chance, assigned the moment the pool filled"},
+  {step:'Step 3 of 6', text:'Every player gets a different team. No two players share a team'},
+  {step:'Step 4 of 6', text:'Your team enters the tournament — follow their progress through every knockout round'},
+  {step:'Step 5 of 6', text:'Still in it — every win brings you closer to the prize pot'},
+  {step:'Step 5 of 6', text:'Into the semis. The full prize pot is waiting'},
+  {step:'Step 6 of 6', text:'One game from winning everything — this is what everyone paid in for'},
+  {step:'Step 6 of 6', text:'Your team won the tournament. Your prize is being processed and will be paid automatically to your account via Stripe.'},
+];
+
+function showNarrator(idx: number) {
+  const n = NARRATOR[idx]; if (!n) return;
+  const el = document.createElement("div");
+  el.id = "narratorToast";
+  el.style.cssText = "position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid rgba(198,241,53,0.3);padding:0.65rem 1.1rem;max-width:420px;width:90%;z-index:500;pointer-events:none;text-align:center;";
+  el.innerHTML = '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:0.25rem;">' + n.step + '</div>'
+    + '<div style="font-size:0.78rem;color:#ECEFF1;line-height:1.6;">' + n.text + '</div>';
+  document.getElementById("narratorToast")?.remove();
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function showDemoPaymentInterstitial(winAmt: number, team: Team) {
+  cleanupDemo();
+  showNarrator(8);
+  const t = team || { n: "Brazil", f: "🇧🇷" };
+  const overlay = document.createElement("div");
+  overlay.id = "demoTournament";
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(10,20,15,0.96);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;";
+  overlay.innerHTML =
+    '<button onclick="window.__sweeppotGoHome()" style="position:fixed;top:1rem;right:1rem;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:0.8rem;padding:0.3rem 0.7rem;cursor:pointer;z-index:301;font-family:var(--font-barlow-condensed),sans-serif;font-weight:600;letter-spacing:0.07em;">✕ EXIT</button>'
+    + '<div style="max-width:560px;width:100%;display:flex;flex-direction:column;gap:1.2rem;">'
+    + '<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--green);border-bottom:1px solid var(--border);padding-bottom:0.6rem;">The Final · Jul 19 · New York</div>'
+    + '<div style="background:var(--card);border:2px solid rgba(198,241,53,0.5);padding:1.2rem 1.4rem;">'
+      + '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem;">'
+        + '<span style="font-size:1.6rem;">' + (t.f || "🏆") + '</span>'
+        + '<div>'
+          + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:1.5rem;color:var(--green);letter-spacing:0.05em;">' + (t.n || "Your Team") + ' Won the Tournament</div>'
+          + '<div style="font-size:0.65rem;color:rgba(198,241,53,0.6);text-transform:uppercase;letter-spacing:0.1em;">Your team ⭐</div>'
+        + '</div>'
+        + '<div style="margin-left:auto;font-size:0.8rem;color:var(--green);font-weight:700;">Won on penalties!</div>'
+      + '</div>'
+      + '<div style="height:1px;background:var(--border);margin:0.5rem 0;"></div>'
+      + '<div style="display:flex;align-items:baseline;gap:0.5rem;">'
+        + '<span style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">Prize pot</span>'
+        + '<span style="font-family:var(--font-bebas-neue),sans-serif;font-size:1.8rem;color:var(--green);letter-spacing:0.03em;">$' + (winAmt || 0) + ' AUD</span>'
+      + '</div>'
+    + '</div>'
+    + '<div style="background:rgba(198,241,53,0.04);border:1px solid rgba(198,241,53,0.22);padding:1.1rem 1.4rem;">'
+      + '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:0.5rem;">Payment Status</div>'
+      + '<div style="font-size:0.95rem;color:#ECEFF1;line-height:1.7;font-weight:500;">Your prize is being processed and will be credited automatically to the payment method you used to enter. <span style="color:rgba(198,241,53,0.85);">Payments are processed automatically and securely via Stripe.</span></div>'
+    + '</div>'
+    + '</div>';
+  document.body.appendChild(overlay);
+  setTimeout(() => { overlay.remove(); showDemoWinnerBanner(winAmt, team); }, 3500);
+}
+
+function showDemoWinnerBanner(winAmt: number, team: Team) {
   cleanupDemo();
   const t = team || { n: "Brazil", f: "🇧🇷" };
   const banner = document.createElement("div");
@@ -94,10 +153,12 @@ function showDemoWinnerBanner(prize: number, team: Team) {
     + '<button onclick="window.__sweeppotGoHome()" style="position:absolute;top:0.7rem;right:0.9rem;background:transparent;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;">✕</button>'
     + '<div style="font-size:2.8rem;margin-bottom:0.5rem;">🏆</div>'
     + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:2.5rem;color:var(--green);letter-spacing:0.05em;margin-bottom:0.2rem;">You Win!</div>'
-    + '<div style="font-size:0.88rem;color:var(--muted);margin-bottom:0.7rem;">' + (t.f || "") + "&nbsp;" + t.n + " won the tournament</div>"
-    + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:3rem;color:var(--gold);letter-spacing:0.03em;margin-bottom:0.3rem;">' + (prize > 0 ? "$" + prize + " AUD" : "🏆 Winner!") + "</div>"
-    + '<div style="font-size:0.7rem;color:var(--dim);margin-bottom:1.4rem;">' + (prize > 0 ? "In a real sweepstake this would be paid automatically to your account via Stripe — no chasing, no awkward conversations." : "Free sweepstake — just bragging rights. Set up a paid pool to play for real.") + "</div>"
-    + '<button onclick="window.__sweeppotGoHome()" style="background:var(--green);color:var(--dark);border:none;padding:0.75rem 1.9rem;font-family:var(--font-barlow-condensed),sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%;">Start Your Own Sweepstake →</button>'
+    + '<div style="font-size:0.88rem;color:var(--muted);margin-bottom:0.8rem;">' + (t.f || "") + "&nbsp;" + t.n + " won the tournament</div>"
+    + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:3rem;color:var(--gold);letter-spacing:0.03em;margin-bottom:1rem;">' + (winAmt > 0 ? "$" + winAmt + " AUD" : "🏆 Winner!") + " </div>"
+    + '<div style="font-size:0.95rem;color:#ECEFF1;line-height:1.75;margin-bottom:1.6rem;padding:0 0.5rem;">'
+      + (winAmt > 0 ? "Your winnings have been processed and will be credited to the card or account you used to enter. Payments are processed automatically and securely via Stripe." : "This was a free sweepstake — bragging rights this time. Set up a paid pool to play for real.")
+    + '</div>'
+    + '<button onclick="window.__sweeppotGoHome()" style="background:var(--green);color:var(--dark);border:none;padding:0.75rem 1.9rem;font-family:var(--font-barlow-condensed),sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%);">Start Your Own Sweepstake →</button>'
     + "</div>";
   document.body.appendChild(banner);
   launchConfetti(); launchConfetti();
@@ -172,7 +233,7 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
 
   function showRound(idx: number) {
     if (idx >= bracket.length) {
-      setTimeout(() => { overlay.remove(); showDemoWinnerBanner(prize, myTeam.team); }, 2000);
+      setTimeout(() => { overlay.remove(); showDemoPaymentInterstitial(prize, myTeam.team); }, 2000);
       return;
     }
     const rd = bracket[idx];
@@ -204,7 +265,7 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
           ? '<div style="text-align:center;margin-top:1rem;padding:0.75rem;background:rgba(198,241,53,0.06);border:1px solid rgba(198,241,53,0.25);">'
             + '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Prize Pot</div>'
             + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:2rem;color:var(--green);">$' + prize + " AUD</div>"
-            + '<div style="font-size:0.65rem;color:var(--dim);">Winner takes all — paid automatically via Stripe</div></div>'
+            + '<div style="font-size:0.65rem;color:var(--dim);">Winner takes all — paid automatically and securely via Stripe</div></div>'
           : "");
     content.appendChild(el);
     requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = "1"; }));
@@ -522,7 +583,7 @@ export default function SweeppotApp() {
         return next;
       });
       idx++;
-    }, 180);
+    }, 900);
 
     setTimeout(() => {
       clearInterval(iv);
@@ -907,7 +968,7 @@ export default function SweeppotApp() {
                   const isYou = i === 0;
                   const cls = p.spun ? (isYou ? "you" : "paid") : "empty";
                   const init = p.name ? p.name.charAt(0).toUpperCase() : "?";
-                  const st = p.spun ? (isYou ? "You — joined & paid ✓" : "Joined & paid ✓") : "Waiting to join";
+                  const st = p.spun ? (isYou ? "You — joined & paid · £20 entry ✓" : "Joined & paid · £20 entry ✓") : "Waiting to join";
                   return (
                     <div key={i} className={`pp-slot ${cls}`}>
                       <div className="pp-av">{p.spun || isYou ? init : "?"}</div>
