@@ -376,6 +376,12 @@ body.light-mode .lp-btn-demo{background:rgba(27,94,32,0.08);border-color:var(--g
 
 
 
+/* ── DEMO NARRATOR BAR ─────────────────────────────────────────── */
+.demo-narrator{position:fixed;bottom:0;left:0;right:0;z-index:500;background:rgba(10,20,15,0.97);border-top:3px solid #C6F135;padding:1.2rem 2rem;animation:narratorSlide 0.35s ease;}
+@keyframes narratorSlide{from{transform:translateY(100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.demo-narrator-step{font-size:0.65rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#C6F135;margin-bottom:0.35rem;}
+.demo-narrator-text{font-size:1.15rem;color:#ECEFF1;font-family:'Barlow',sans-serif;font-weight:500;line-height:1.5;max-width:700px;}
+
 /* ── BRACKET SCREEN ──────────────────────────────────────────── */
 .bracket-wrap{padding:1.2rem 1rem 3rem;overflow-x:auto;}
 .bracket-pool-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.5rem;}
@@ -1461,6 +1467,7 @@ function cleanupDemo(){
   ['demoOverlay','demoBanner','demoTournament','demoWheelOverlay'].forEach(function(id){
     const el=document.getElementById(id);if(el)el.remove();
   });
+  removeNarrator();
 }
 
 function runDemoSpeedrun(){
@@ -1486,22 +1493,47 @@ function runDemoSpeedrun(){
   const nc=document.getElementById('navCtx');
   if(nc)nc.textContent=' · The Office WC 2026';
   showScreen('sWaiting');
+  showNarrator(0);
 
+  // Animate players joining one by one — slower so you can see names
   let joinIdx=1;
   const joinInterval=setInterval(function(){
-    if(joinIdx>=A.participants.length){clearInterval(joinInterval);return;}
+    if(joinIdx>=A.participants.length){
+      clearInterval(joinInterval);
+      // All players joined — update title and show pool full popup
+      if(wt)wt.textContent='Pool is full!';
+      renderPPGrid();
+      setTimeout(showDemoPoolFullPopup, 600);
+      return;
+    }
     A.participants[joinIdx].paid=true;
     A.participants[joinIdx].spun=true;
     joinIdx++; renderPPGrid();
   }, 900);
+}
 
-  // After players join, show the wheel draw
-  setTimeout(function(){
-    clearInterval(joinInterval);
-    A.participants.forEach(p=>{p.paid=true;p.spun=true;});
-    renderPPGrid();
-    showDemoWheelDraw();
-  }, 1600);
+function showDemoPoolFullPopup(){
+  cleanupDemo();
+  showNarrator(1);
+
+  const popup=document.createElement('div');
+  popup.id='demoOverlay';
+  popup.style.cssText='position:fixed;inset:0;background:rgba(10,20,15,0.88);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;';
+
+  popup.innerHTML=
+    '<div style="background:var(--dark2);border:2px solid var(--green);max-width:420px;width:100%;padding:2rem;text-align:center;position:relative;">'
+    +'<button onclick="cleanupDemo();goHome();" style="position:absolute;top:0.7rem;right:0.9rem;background:transparent;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;">✕</button>'
+    +'<div style="font-size:2.2rem;margin-bottom:0.6rem;">🎉</div>'
+    +'<div style="font-size:1.8rem;font-weight:900;color:var(--green);letter-spacing:0.05em;margin-bottom:0.5rem;">Pool Is Full!</div>'
+    +'<div style="font-size:0.95rem;color:var(--muted);margin-bottom:0.4rem;">All 8 players have paid in.</div>'
+    +'<div style="font-size:0.95rem;color:#ECEFF1;margin-bottom:1.6rem;font-weight:500;">Time to spin the wheel and find out your team.</div>'
+    +'<button onclick="document.getElementById(&quot;demoOverlay&quot;).remove();showDemoWheelDraw();" '
+    +'style="background:var(--green);color:var(--dark);border:none;padding:0.85rem 2rem;font-weight:700;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;width:100%;">'
+    +'🎡 Spin My Wheel →'
+    +'</button>'
+    +'</div>';
+
+  document.body.appendChild(popup);
 }
 
 // ── ANIMATED WHEEL DRAW OVERLAY ────────────────────────────────
@@ -1656,14 +1688,26 @@ function showDemoWheelDraw(){
     requestAnimationFrame(animateFrame);
   }
 
-  // Queue up all spins
+  // Queue up all spins — show a button for the user's own spin
   function runAllSpins(idx){
     if(idx===0){
-      // Only spin for "You" — your draw is the one that matters
-      setTimeout(function(){
+      // Show a SPIN button — let the user spin their own wheel
+      statusEl.innerHTML='<span style="color:var(--green);font-weight:700;">⭐ Your turn — tap to spin!</span>';
+      showNarrator(2);
+
+      // Add a spin button below the wheel
+      const existingBtn=document.getElementById('demoSpinBtn');
+      if(existingBtn)existingBtn.remove();
+      const spinBtn=document.createElement('button');
+      spinBtn.id='demoSpinBtn';
+      spinBtn.textContent='🎡 Spin My Wheel';
+      spinBtn.style.cssText='background:var(--green);color:var(--dark);border:none;padding:0.75rem 2rem;font-weight:700;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;margin-top:0.5rem;';
+      spinBtn.onclick=function(){
+        spinBtn.remove();
         spinAndPick(function(){
           // After your spin, instantly assign remaining teams to everyone else
-          statusEl.innerHTML='<span style="color:var(--muted);">Assigning remaining teams...</span>';
+          statusEl.innerHTML='<span style="color:var(--muted);">Assigning your friends\' teams...</span>';
+          showNarrator(3);
           setTimeout(function(){
             // Flash-assign all remaining teams
             while(remaining.length>0){
@@ -1686,7 +1730,8 @@ function showDemoWheelDraw(){
             }, 1200);
           }, 600);
         });
-      }, 400);
+      };
+      overlay.appendChild(spinBtn);
     }
   }
 
@@ -1797,6 +1842,8 @@ function runBracketAnimation(assignedResults){
         ?'<span style="color:var(--green);font-weight:700;font-size:1rem;">🏆 THE FINAL — $'+prize+' AUD on the line</span>'
         :'<span style="color:var(--green);">'+rd.round+' · '+rd.date+'</span>';
     }
+    // Narrator: R16=4, QF=5, SF=6, Final=7
+    showNarrator([4,5,6,7][roundIdx-1]||4);
 
     // Build round HTML
     const content=document.getElementById('bracketAnimContent');
@@ -1882,16 +1929,20 @@ const NARRATOR = [
   {step:'Step 6 of 6', text:'Your team won the tournament. Your prize is being processed and will be paid automatically to your account via Stripe.'},
 ];
 
-function showNarrator(idx){
-  const n=NARRATOR[idx];if(!n)return;
-  const el=document.createElement('div');
-  el.id='narratorToast';
-  el.style.cssText='position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid rgba(198,241,53,0.3);padding:0.65rem 1.1rem;max-width:420px;width:90%;z-index:500;pointer-events:none;text-align:center;';
-  el.innerHTML='<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:0.25rem;">'+n.step+'</div>'
-    +'<div style="font-size:0.78rem;color:#ECEFF1;line-height:1.6;">'+n.text+'</div>';
-  document.getElementById('narratorToast')?.remove();
-  document.body.appendChild(el);
-  setTimeout(function(){el.remove();},3000);
+function showNarrator(i){
+  removeNarrator();
+  const s=NARRATOR[i];if(!s)return;
+  const bar=document.createElement('div');
+  bar.id='demoNarrator';
+  bar.className='demo-narrator';
+  bar.innerHTML='<div class="demo-narrator-step">'+s.step+'</div>'
+    +'<div class="demo-narrator-text">'+s.text+'</div>';
+  document.body.appendChild(bar);
+}
+
+function removeNarrator(){
+  const el=document.getElementById('demoNarrator');
+  if(el)el.remove();
 }
 
 function showDemoPaymentInterstitial(winAmt, team){

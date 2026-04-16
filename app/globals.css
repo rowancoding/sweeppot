@@ -565,6 +565,12 @@ input[type="range"]::-webkit-slider-thumb { appearance: none; width: 17px; heigh
   .terms-title { font-size: 2rem; }
 }
 
+/* ── DEMO NARRATOR BAR ── */
+.demo-narrator { position: fixed; bottom: 0; left: 0; right: 0; z-index: 500; background: rgba(10,20,15,0.97); border-top: 3px solid #C6F135; padding: 1.2rem 2rem; animation: narratorSlide 0.35s ease; }
+@keyframes narratorSlide { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.demo-narrator-step { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #C6F135; margin-bottom: 0.35rem; }
+.demo-narrator-text { font-size: 1.15rem; color: #ECEFF1; font-family: var(--font-barlow), sans-serif; font-weight: 500; line-height: 1.5; max-width: 700px; }
+
 /* ── ANIMATIONS ── */
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
 @keyframes cff { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }

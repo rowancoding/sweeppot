@@ -58,6 +58,7 @@ function cleanupDemo() {
   ["demoOverlay","demoBanner","demoTournament","demoWheelOverlay"].forEach(id => {
     document.getElementById(id)?.remove();
   });
+  removeNarrator();
 }
 
 function launchConfetti() {
@@ -95,16 +96,19 @@ const NARRATOR = [
   {step:'Step 6 of 6', text:'Your team won the tournament. Your prize is being processed and will be paid automatically to your account via Stripe.'},
 ];
 
-function showNarrator(idx: number) {
-  const n = NARRATOR[idx]; if (!n) return;
-  const el = document.createElement("div");
-  el.id = "narratorToast";
-  el.style.cssText = "position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid rgba(198,241,53,0.3);padding:0.65rem 1.1rem;max-width:420px;width:90%;z-index:500;pointer-events:none;text-align:center;";
-  el.innerHTML = '<div style="font-size:0.55rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:0.25rem;">' + n.step + '</div>'
-    + '<div style="font-size:0.78rem;color:#ECEFF1;line-height:1.6;">' + n.text + '</div>';
-  document.getElementById("narratorToast")?.remove();
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+function showNarrator(i: number) {
+  removeNarrator();
+  const s = NARRATOR[i]; if (!s) return;
+  const bar = document.createElement("div");
+  bar.id = "demoNarrator";
+  bar.className = "demo-narrator";
+  bar.innerHTML = '<div class="demo-narrator-step">' + s.step + '</div>'
+    + '<div class="demo-narrator-text">' + s.text + '</div>';
+  document.body.appendChild(bar);
+}
+
+function removeNarrator() {
+  document.getElementById("demoNarrator")?.remove();
 }
 
 function showDemoPaymentInterstitial(winAmt: number, team: Team) {
@@ -244,6 +248,8 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
         ? '<span style="color:var(--green);font-weight:700;font-size:1rem;">🏆 THE FINAL — $' + prize + ' AUD on the line</span>'
         : '<span style="color:var(--green);">' + rd.round + " · " + rd.date + "</span>";
     }
+    // Narrator: R16=4, QF=5, SF=6, Final=7
+    showNarrator([4,5,6,7][idx-1]||4);
     const content = document.getElementById("bracketAnimContent");
     if (!content) return;
     const el = document.createElement("div");
@@ -273,6 +279,30 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
     setTimeout(() => showRound(idx + 1), isFinal ? 3000 : 2000);
   }
   showRound(0);
+}
+
+function showDemoPoolFullPopup(pot: number) {
+  cleanupDemo();
+  showNarrator(1);
+
+  const popup = document.createElement("div");
+  popup.id = "demoOverlay";
+  popup.style.cssText = "position:fixed;inset:0;background:rgba(10,20,15,0.88);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;";
+
+  popup.innerHTML =
+    '<div style="background:var(--dark2);border:2px solid var(--green);max-width:420px;width:100%;padding:2rem;text-align:center;position:relative;">'
+    + '<button onclick="window.__sweeppotGoHome()" style="position:absolute;top:0.7rem;right:0.9rem;background:transparent;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;">✕</button>'
+    + '<div style="font-size:2.2rem;margin-bottom:0.6rem;">🎉</div>'
+    + '<div style="font-size:1.8rem;font-weight:900;color:var(--green);letter-spacing:0.05em;margin-bottom:0.5rem;">Pool Is Full!</div>'
+    + '<div style="font-size:0.95rem;color:var(--muted);margin-bottom:0.4rem;">All 8 players have paid in.</div>'
+    + '<div style="font-size:0.95rem;color:#ECEFF1;margin-bottom:1.6rem;font-weight:500;">Time to spin the wheel and find out your team.</div>'
+    + '<button id="demoPoolFullBtn" style="background:var(--green);color:var(--dark);border:none;padding:0.85rem 2rem;font-weight:700;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;width:100%;">'
+    + '🎡 Spin My Wheel →'
+    + '</button>'
+    + '</div>';
+
+  document.body.appendChild(popup);
+  document.getElementById("demoPoolFullBtn")!.onclick = () => { popup.remove(); showDemoWheelDraw(pot); };
 }
 
 function showDemoWheelDraw(pot: number) {
@@ -375,10 +405,23 @@ function showDemoWheelDraw(pot: number) {
   drawWheel2(remaining, 0, null);
 
   const allAssigned: AssignedResult[] = [];
-  setTimeout(() => {
+
+  // Show a SPIN button — let the user spin their own wheel
+  statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">⭐ Your turn — tap to spin!</span>';
+  showNarrator(2);
+
+  const existingBtn = document.getElementById("demoSpinBtn");
+  if (existingBtn) existingBtn.remove();
+  const spinBtn = document.createElement("button");
+  spinBtn.id = "demoSpinBtn";
+  spinBtn.textContent = "🎡 Spin My Wheel";
+  spinBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.75rem 2rem;font-weight:700;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;margin-top:0.5rem;";
+  spinBtn.onclick = function() {
+    spinBtn.remove();
     spinAndPick(() => {
       // After your spin, flash-assign the rest
-      statusEl.innerHTML = '<span style="color:var(--muted);">Assigning remaining teams...</span>';
+      statusEl.innerHTML = '<span style="color:var(--muted);">Assigning your friends\' teams...</span>';
+      showNarrator(3);
       setTimeout(() => {
         while (remaining.length > 0) {
           const ri = Math.floor(Math.random() * remaining.length);
@@ -397,7 +440,8 @@ function showDemoWheelDraw(pot: number) {
         setTimeout(() => { overlay.remove(); runBracketAnimation(allAssigned, pot); }, 1200);
       }, 600);
     });
-  }, 400);
+  };
+  overlay.appendChild(spinBtn);
 }
 
 // ─────────────────────────────────────────────
@@ -571,12 +615,20 @@ export default function SweeppotApp() {
     const parts = participants.map((p, i) => i === 0 ? { ...p, name: "You", paid: true } : p);
     setParticipants(parts);
     setScreen("waiting");
+    showNarrator(0);
     const expiry = new Date(Date.now() + 6 * 864e5);
     startCountdown(expiry);
 
+    const pot = poolPlayerCount * poolBetAud;
     let idx = 1;
     const iv = setInterval(() => {
-      if (idx >= parts.length) { clearInterval(iv); return; }
+      if (idx >= parts.length) {
+        clearInterval(iv);
+        // All players joined — show pool full popup
+        setParticipants(prev => prev.map(p => ({ ...p, paid: true, spun: true })));
+        setTimeout(() => showDemoPoolFullPopup(pot), 600);
+        return;
+      }
       setParticipants(prev => {
         const next = [...prev];
         next[idx] = { ...next[idx], paid: true, spun: true };
@@ -584,13 +636,6 @@ export default function SweeppotApp() {
       });
       idx++;
     }, 900);
-
-    setTimeout(() => {
-      clearInterval(iv);
-      setParticipants(prev => prev.map(p => ({ ...p, paid: true, spun: true })));
-      const pot = poolPlayerCount * poolBetAud;
-      showDemoWheelDraw(pot);
-    }, 1600);
   }, [participants, poolBetAud, poolPlayerCount, startCountdown]);
 
   // ── RENDER ────────────────────────────────────────────────────
