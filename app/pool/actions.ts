@@ -271,3 +271,42 @@ export async function startDraw(poolId: string): Promise<{ error: string } | voi
 
   redirect(`/pool/${poolId}`);
 }
+
+// ── Mark Spun ─────────────────────────────────────────────────
+
+export async function markSpun(poolId: string): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated." };
+
+  // Verify pool is active
+  const { data: pool } = await supabase
+    .from("pools")
+    .select("status")
+    .eq("id", poolId)
+    .single();
+
+  if (pool?.status !== "active") return { error: "Pool is not active." };
+
+  // Find participant — reject if already spun (server enforces one-spin-only)
+  const { data: participant } = await supabase
+    .from("participants")
+    .select("id, spun")
+    .eq("pool_id", poolId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!participant) return { error: "Not a participant." };
+  if (participant.spun) return { error: "You have already spun for this pool." };
+
+  const { error } = await supabase
+    .from("participants")
+    .update({ spun: true })
+    .eq("id", participant.id);
+
+  if (error) return { error: error.message };
+  return {};
+}

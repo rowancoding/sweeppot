@@ -342,6 +342,69 @@ body.light-mode .lp-btn-primary { color: #fff; }
   .mt-toggle-wrap { align-items: flex-start; }
 }
 
+/* ── SPIN WHEEL ── */
+.spin-page { min-height: 100vh; background: var(--dark); display: flex; flex-direction: column; }
+.spin-nav { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--dark2); position: sticky; top: 0; z-index: 50; }
+.spin-nav-logo { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.4rem; color: var(--green); letter-spacing: 0.08em; }
+.spin-card-wrap { max-width: 900px; margin: 2rem auto; padding: 0 1rem; width: 100%; }
+.spin-layout { display: grid; grid-template-columns: 1fr 320px; gap: 0; }
+.spin-left { padding: 1.8rem; display: flex; flex-direction: column; align-items: center; gap: 1.3rem; border-right: 1px solid var(--border); }
+.spin-pool-info { width: 100%; display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 0.95rem; border-bottom: 1px solid var(--border); }
+.spin-pool-name { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.2rem; letter-spacing: 0.05em; }
+.spin-pool-meta { font-size: 0.69rem; color: var(--muted); margin-top: 0.18rem; }
+.tier-badge { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.22rem 0.65rem; border: 1px solid; }
+.tb-1 { border-color: rgba(0,230,118,0.4); color: var(--green); background: rgba(0,230,118,0.08); }
+.tb-2 { border-color: rgba(120,144,156,0.5); color: var(--gold); background: rgba(120,144,156,0.08); }
+.player-row { display: flex; align-items: center; gap: 0.7rem; width: 100%; }
+.player-lbl { font-size: 0.66rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+.player-name-disp { flex: 1; background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.2); padding: 0.36rem 0.7rem; font-family: var(--font-barlow-condensed), sans-serif; font-size: 0.98rem; font-weight: 700; color: var(--green); letter-spacing: 0.04em; }
+.wheel-wrap { position: relative; width: 300px; height: 300px; }
+.wheel-ptr { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 20px solid var(--green); z-index: 10; }
+.wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 44px; height: 44px; background: var(--dark); border: 3px solid var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; z-index: 5; }
+.spin-btn { background: var(--green); color: var(--dark); border: none; padding: 0.88rem 3rem; font-family: var(--font-bebas-neue), sans-serif; font-size: 1.28rem; letter-spacing: 0.1em; cursor: pointer; clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%); transition: all 0.2s; }
+.spin-btn:hover:not(:disabled) { background: #00FF88; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,230,118,0.35); }
+.spin-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.spin-btn.spinning { animation: pb 0.5s ease-in-out infinite alternate; }
+@keyframes pb { from { box-shadow: 0 0 10px rgba(0,230,118,0.3); } to { box-shadow: 0 0 24px rgba(0,230,118,0.7); } }
+.result-panel { width: 100%; display: none; flex-direction: column; gap: 0.75rem; align-items: center; }
+.result-panel.show { display: flex; }
+.result-team-card { width: 100%; background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.35); padding: 1.2rem; text-align: center; animation: rca 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+.result-lbl { font-size: 0.61rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.35rem; }
+.result-flag { font-size: 2.8rem; margin-bottom: 0.25rem; display: block; }
+.result-tname { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.9rem; color: var(--green); letter-spacing: 0.05em; }
+.result-rank { font-size: 0.7rem; color: var(--muted); margin-top: 0.15rem; }
+.result-warn { font-size: 0.74rem; color: var(--muted); text-align: center; line-height: 1.6; padding: 0.65rem 1rem; background: var(--dark3); border: 1px solid var(--border); width: 100%; }
+.dismiss-btn { background: var(--dark3); color: var(--text); border: 1px solid rgba(0,230,118,0.3); padding: 0.68rem 2rem; font-family: var(--font-barlow-condensed), sans-serif; font-weight: 700; font-size: 0.88rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; width: 100%; }
+.dismiss-btn:hover { background: rgba(0,230,118,0.08); border-color: var(--green); color: var(--green); }
+.result-placeholder { width: 100%; text-align: center; padding: 1.4rem 1rem; background: var(--dark3); border: 1px solid var(--border); font-size: 0.77rem; color: var(--dim); }
+.spin-right { display: flex; flex-direction: column; }
+.spin-ss { padding: 1.05rem; border-bottom: 1px solid var(--border); overflow-y: auto; }
+.spin-ss:last-child { border-bottom: none; flex: 1; }
+.sidebar-lbl { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green); margin-bottom: 0.6rem; padding-bottom: 0.38rem; border-bottom: 1px solid var(--border); }
+.tier-grp { margin-bottom: 0.65rem; }
+.tier-grp:last-child { margin-bottom: 0; }
+.tier-grp-lbl { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+.team-item { display: flex; align-items: center; gap: 0.4rem; padding: 0.28rem 0.4rem; font-size: 0.77rem; transition: background 0.2s; }
+.team-item.assigned { background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.25); animation: tip 2s ease 0.3s; }
+@keyframes tip { 0%,100% { background: rgba(0,230,118,0.08); } 50% { background: rgba(0,230,118,0.22); } }
+.ti-flag { font-size: 0.86rem; width: 17px; text-align: center; }
+.ti-name { flex: 1; font-family: var(--font-barlow-condensed), sans-serif; font-weight: 600; letter-spacing: 0.02em; }
+.ti-rank { font-size: 0.57rem; color: var(--muted); }
+.spin-status { padding: 0.6rem 1.8rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--dark2); font-size: 0.73rem; color: var(--muted); }
+/* Spin prompt banner on pool page */
+.spin-prompt { margin: 1.2rem 1.8rem; background: rgba(198,241,53,0.06); border: 1px solid rgba(198,241,53,0.3); padding: 1.1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.spin-prompt-text { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+.spin-prompt-title { font-family: var(--font-barlow-condensed), sans-serif; font-weight: 700; font-size: 1rem; color: var(--green); letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+/* Hidden team placeholder */
+.rc-hidden { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--muted); padding: 0.3rem 0; }
+/* Blocked page */
+.blocked-wrap { min-height: 100vh; background: var(--dark); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 2rem; text-align: center; }
+.blocked-icon { font-size: 3rem; margin-bottom: 1rem; }
+.blocked-title { font-family: var(--font-bebas-neue), sans-serif; font-size: 2.5rem; color: var(--text); letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+.blocked-sub { font-size: 0.87rem; color: var(--muted); line-height: 1.75; max-width: 480px; margin-bottom: 2rem; }
+.blocked-logo { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.5rem; color: var(--green); letter-spacing: 0.08em; margin-bottom: 3rem; }
+@media (max-width: 700px) { .spin-layout { grid-template-columns: 1fr; } .spin-left { border-right: none; border-bottom: 1px solid var(--border); } }
+
 /* ── AUTH PAGES ── */
 .auth-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; background: var(--dark); }
 .auth-card { background: var(--card); border: 1px solid var(--border); width: 100%; max-width: 420px; position: relative; }

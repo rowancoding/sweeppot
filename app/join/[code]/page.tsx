@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
 import { COMP_META } from "@/lib/teams";
 import JoinForm from "./JoinForm";
@@ -41,17 +41,19 @@ export default async function JoinPage({
     pool.bet_aud > 0 ? `$${(pool.bet_aud * pool.player_count).toFixed(0)} AUD` : "Free";
 
   // Check if current user is already in this pool
-  const alreadyIn = user
-    ? participants.some(async () => {
-        const { data } = await supabase
-          .from("participants")
-          .select("id")
-          .eq("pool_id", pool.id)
-          .eq("user_id", user.id)
-          .maybeSingle();
-        return !!data;
-      })
-    : false;
+  let alreadyIn = false;
+  if (user) {
+    const { data: myPart } = await supabase
+      .from("participants")
+      .select("id")
+      .eq("pool_id", pool.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    alreadyIn = !!myPart;
+  }
+
+  // Already in pool — redirect directly
+  if (alreadyIn) redirect(`/pool/${pool.id}`);
 
   return (
     <div className="join-wrap">
@@ -140,7 +142,7 @@ export default async function JoinPage({
               </div>
             ) : (
               // Signed in — show join form
-              <JoinForm poolId={pool.id} betAud={pool.bet_aud} />
+              <JoinForm poolId={pool.id} betAud={pool.bet_aud} inviteCode={code} />
             )}
           </div>
         )}

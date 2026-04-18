@@ -204,12 +204,11 @@ export default async function PoolPage({
 
   // ── Active / Complete — Draw Results ────────────────────────
   const isComplete = typedPool.status === "complete";
+  const myHasSpun  = myParticipant?.spun ?? false;
+  const needsSpin  = !isComplete && myParticipant && !myHasSpun;
 
-  // Find the winner (participant whose team is uneliminated — placeholder logic;
-  // in production this comes from tournament_results). For now we surface
-  // the participant list with their teams.
   const winner = isComplete
-    ? participants.find((p) => p.team_assignments.length > 0) ?? null
+    ? participants.find((p) => p.spun && p.team_assignments.length > 0) ?? null
     : null;
 
   return (
@@ -237,17 +236,42 @@ export default async function PoolPage({
                 <div style={{ fontSize: "2.8rem", marginBottom: "0.5rem" }}>🎡</div>
                 <div className="reveal-title">The Draw!</div>
                 <p className="reveal-sub">
-                  {meta.icon} {meta.label} · Everyone&apos;s teams — drawn simultaneously.
+                  {meta.icon} {meta.label} · Each player spins to reveal their team.
                 </p>
               </>
             )}
           </div>
 
+          {/* Spin prompt — shown when current user hasn't spun */}
+          {needsSpin && (
+            <div className="spin-prompt">
+              <div>
+                <div className="spin-prompt-title">Your pool is ready — spin to find out your team</div>
+                <div className="spin-prompt-text">
+                  The wheel shows all teams. Spin once — wherever it lands is your team. Other players&apos; results stay hidden until they spin too.
+                </div>
+              </div>
+              <Link
+                href={`/pool/${typedPool.id}/spin`}
+                style={{
+                  background: "var(--green)", color: "var(--dark)", border: "none",
+                  padding: "0.78rem 1.8rem", fontFamily: "var(--font-barlow-condensed), sans-serif",
+                  fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.08em",
+                  textTransform: "uppercase", textDecoration: "none", whiteSpace: "nowrap",
+                  clipPath: "polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)",
+                }}
+              >
+                🎡 Spin to Reveal →
+              </Link>
+            </div>
+          )}
+
           {/* Team assignments grid */}
           <div className="reveal-grid">
             {participants.map((p, i) => {
-              const isYou = p.user_id === user?.id;
-              const delay = i * 80;
+              const isYou  = p.user_id === user?.id;
+              const delay  = i * 80;
+              const teamsVisible = p.spun; // only show teams after participant has spun
               return (
                 <div
                   key={p.id}
@@ -258,21 +282,30 @@ export default async function PoolPage({
                     {isYou ? "⭐ You" : p.display_name}
                   </div>
                   <div className="rc-teams">
-                    {p.team_assignments
-                      .sort((a, b) => a.tier - b.tier)
-                      .map((t) => (
-                        <div key={t.id} className="rc-team">
-                          <span className="rc-flag">{t.team_flag}</span>
-                          <span>{t.team_name}</span>
-                          <span className="rc-rank">#{t.team_rank}</span>
-                        </div>
-                      ))}
-                    {p.team_assignments.length === 0 && (
-                      <div style={{ fontSize: "0.75rem", color: "var(--muted)" }}>
-                        No team assigned
+                    {teamsVisible ? (
+                      p.team_assignments
+                        .sort((a, b) => a.tier - b.tier)
+                        .map((t) => (
+                          <div key={t.id} className="rc-team">
+                            <span className="rc-flag">{t.team_flag}</span>
+                            <span>{t.team_name}</span>
+                            <span className="rc-rank">#{t.team_rank}</span>
+                          </div>
+                        ))
+                    ) : (
+                      <div className="rc-hidden">
+                        🔒 <span>Waiting to spin</span>
                       </div>
                     )}
                   </div>
+                  {isYou && !p.spun && (
+                    <Link
+                      href={`/pool/${typedPool.id}/spin`}
+                      style={{ fontSize: "0.65rem", color: "var(--green)", textDecoration: "none", marginTop: "0.3rem" }}
+                    >
+                      Spin now →
+                    </Link>
+                  )}
                 </div>
               );
             })}
@@ -284,14 +317,8 @@ export default async function PoolPage({
               ⌂ Back to My Pools
             </Link>
             {!isComplete && (
-              <span
-                style={{
-                  fontSize: "0.72rem",
-                  color: "var(--muted)",
-                  alignSelf: "center",
-                }}
-              >
-                <span className="sdot" /> Pool active — results update as the tournament progresses
+              <span style={{ fontSize: "0.72rem", color: "var(--muted)", alignSelf: "center" }}>
+                <span className="sdot" /> Pool active — teams revealed as players spin
               </span>
             )}
           </div>
