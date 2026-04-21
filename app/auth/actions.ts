@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
-import { createAdminClient } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 
 export async function login(
@@ -19,26 +18,7 @@ export async function login(
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) {
-    // Bypass the email confirmation gate — confirm via admin then retry
-    if (error.message.toLowerCase().includes("email not confirmed")) {
-      try {
-        const admin = createAdminClient();
-        const { data: { users } } = await admin.auth.admin.listUsers({ perPage: 1000 });
-        const found = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
-        if (found) {
-          await admin.auth.admin.updateUserById(found.id, { email_confirm: true });
-          const { error: retryErr } = await supabase.auth.signInWithPassword({ email, password });
-          if (!retryErr) redirect(next);
-          return { error: retryErr!.message };
-        }
-      } catch {
-        // Admin client unavailable (service role key not set) — fall through
-      }
-      return { error: "Please verify your email before signing in, or contact support." };
-    }
-    return { error: error.message };
-  }
+  if (error) return { error: error.message };
 
   redirect(next);
 }
@@ -65,10 +45,16 @@ export async function signup(
     return { error: "You must be 18 or older to create an account." };
   }
 
-  const supabase  = await createClient();
-  const siteUrl   = process.env.NEXT_PUBLIC_SITE_URL || "https://sweeppot.com";
+  // Requires "Confirm email" to be OFF in Supabase dashboard →
+  // Authentication → Providers → Email → toggle off "Confirm email".
+  // With it off, signUp() returns a session immediately and the user is
+  // signed in on the spot. The email_needs_verification flag is still set
+  // so the dashboard banner prompts them to verify, and pool actions remain
+  // gated until they click the confirmation link at /auth/confirm.
+  const supabase = await createClient();
+  const siteUrl  = process.env.NEXT_PUBLIC_SITE_URL || "https://sweeppot.com";
 
-  const { data, error } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -82,19 +68,6 @@ export async function signup(
   });
 
   if (error) return { error: error.message };
-
-  // If Supabase requires email confirmation the session is null — bypass via admin
-  if (data.user && !data.session) {
-    try {
-      const admin = createAdminClient();
-      await admin.auth.admin.updateUserById(data.user.id, { email_confirm: true });
-      const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInErr) return { error: signInErr.message };
-    } catch {
-      // Admin key not set — account created but can't sign in automatically
-      return { error: "Account created — check your email to verify and then sign in." };
-    }
-  }
 
   redirect(next);
 }
