@@ -30,6 +30,10 @@ export async function createPool(
     return { error: "You must be signed in to create a pool." };
   }
 
+  if (user.user_metadata?.email_needs_verification === true) {
+    return { error: "Please verify your email before creating or joining a pool." };
+  }
+
   const comp         = formData.get("comp")          as string;
   const poolName     = formData.get("pool_name")     as string;
   const stage        = formData.get("stage")         as string;
@@ -135,6 +139,10 @@ export async function joinPool(
 
   if (!user) {
     return { error: "You must be signed in to join a pool." };
+  }
+
+  if (user.user_metadata?.email_needs_verification === true) {
+    return { error: "Please verify your email before creating or joining a pool." };
   }
 
   const poolId = formData.get("pool_id") as string;

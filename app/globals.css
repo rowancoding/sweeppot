@@ -397,6 +397,11 @@ body.light-mode .lp-btn-primary { color: #fff; }
 .spin-prompt-title { font-family: var(--font-barlow-condensed), sans-serif; font-weight: 700; font-size: 1rem; color: var(--green); letter-spacing: 0.04em; margin-bottom: 0.2rem; }
 /* Hidden team placeholder */
 .rc-hidden { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--muted); padding: 0.3rem 0; }
+/* Email verification banner */
+.verify-banner { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; background: rgba(198,241,53,0.07); border-bottom: 1px solid rgba(198,241,53,0.2); padding: 0.55rem 1.4rem; font-size: 0.76rem; color: var(--text); }
+.verify-banner-text { flex: 1; min-width: 200px; }
+.verify-banner-resend { background: transparent; border: 1px solid rgba(198,241,53,0.4); color: var(--green); padding: 0.25rem 0.7rem; font-size: 0.71rem; font-family: var(--font-barlow-condensed), sans-serif; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; white-space: nowrap; }
+.verify-banner-resend:disabled { opacity: 0.55; cursor: default; }
 /* Blocked page */
 .blocked-wrap { min-height: 100vh; background: var(--dark); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 2rem; text-align: center; }
 .blocked-icon { font-size: 3rem; margin-bottom: 1rem; }

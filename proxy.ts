@@ -53,7 +53,8 @@ export async function proxy(request: NextRequest) {
     pathname === "/terms" ||
     pathname === "/blocked" ||
     pathname.startsWith("/join/") ||
-    pathname.startsWith("/api/stripe/");
+    pathname.startsWith("/api/stripe/") ||
+    pathname.startsWith("/auth/confirm");
 
   // Unauthenticated: redirect to /auth/login (except on auth/public routes)
   if (!user && !isAuthRoute && !isPublicRoute) {

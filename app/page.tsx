@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useTransition } from "react";
 import { createClient } from "@/lib/supabase";
-import { logout } from "@/app/auth/actions";
+import { logout, resendVerification } from "@/app/auth/actions";
 
 // ─────────────────────────────────────────────
 // Types
@@ -479,9 +479,12 @@ export default function SweeppotApp() {
   const [poolBetAud, setPoolBetAud]   = useState(20);
   const [poolPlayerCount, setPoolPlayerCount] = useState(8);
   const [countdown, setCountdown]     = useState({ d:"07", h:"23", m:"59", s:"59" });
-  const [displayName, setDisplayName] = useState<string>("");
-  const [livePools, setLivePools]     = useState<DemoPool[] | null>(null);
-  const [isLoggedIn, setIsLoggedIn]   = useState<boolean | null>(null);
+  const [displayName, setDisplayName]           = useState<string>("");
+  const [livePools, setLivePools]               = useState<DemoPool[] | null>(null);
+  const [isLoggedIn, setIsLoggedIn]             = useState<boolean | null>(null);
+  const [emailNeedsVerification, setEmailNeedsVerification] = useState(false);
+  const [resendPending, startResendTransition]  = useTransition();
+  const [resendDone, setResendDone]             = useState(false);
   const cdTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const howRef  = useRef<HTMLDivElement>(null);
 
@@ -501,6 +504,7 @@ export default function SweeppotApp() {
 
         const meta = user.user_metadata;
         setDisplayName(meta?.display_name || user.email?.split("@")[0] || "");
+        setEmailNeedsVerification(meta?.email_needs_verification === true);
 
         // Fetch pools where the user is a participant
         const { data: participantRows } = await supabase
@@ -644,6 +648,27 @@ export default function SweeppotApp() {
 
   return (
     <>
+      {/* ── Email verification banner ── */}
+      {isLoggedIn && emailNeedsVerification && (
+        <div className="verify-banner">
+          <span className="verify-banner-text">
+            📧 Please check your inbox and verify your email address to create or join pools.
+          </span>
+          <button
+            className="verify-banner-resend"
+            disabled={resendPending || resendDone}
+            onClick={() => {
+              startResendTransition(async () => {
+                await resendVerification();
+                setResendDone(true);
+              });
+            }}
+          >
+            {resendDone ? "Email sent ✓" : resendPending ? "Sending…" : "Resend email"}
+          </button>
+        </div>
+      )}
+
       {/* ── Nav bar ── */}
       <nav className="nav-bar">
         <div className="nav-logo" onClick={() => { setScreen("landing"); window.scrollTo({ top: 0, behavior: "smooth" }); }}>

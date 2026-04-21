@@ -14,6 +14,10 @@ export async function createCheckoutSession(
 
   if (!user) return { error: "You must be signed in to join a pool." };
 
+  if (user.user_metadata?.email_needs_verification === true) {
+    return { error: "Please verify your email before creating or joining a pool." };
+  }
+
   const poolId     = formData.get("pool_id")     as string;
   const inviteCode = formData.get("invite_code") as string;
 
