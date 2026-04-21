@@ -104,31 +104,42 @@ export async function forgotPassword(
 }
 
 export async function resetPassword(
-  _prev: { error?: string } | null,
+  _prev: { error?: string; expired?: boolean } | null,
   formData: FormData
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; expired?: boolean }> {
   const password        = formData.get("password")         as string;
   const confirmPassword = formData.get("confirm_password") as string;
-  const tokenHash       = formData.get("token_hash")       as string;
+  const code            = formData.get("code")             as string | null;
+  const tokenHash       = formData.get("token_hash")       as string | null;
   const type            = (formData.get("type") as string) || "recovery";
 
   if (!password || !confirmPassword) return { error: "Both password fields are required." };
   if (password !== confirmPassword)   return { error: "Passwords do not match." };
   if (password.length < 8)            return { error: "Password must be at least 8 characters." };
-  if (!tokenHash)                     return { error: "Invalid or expired reset link. Please request a new one." };
 
   const supabase = await createClient();
 
-  // Exchange the recovery token for a session
-  const { error: otpErr } = await supabase.auth.verifyOtp({
-    type: type as EmailOtpType,
-    token_hash: tokenHash,
-  });
-  if (otpErr) return { error: "This reset link has expired or already been used. Please request a new one." };
+  // Establish a session from whichever token format Supabase used in the reset email.
+  // @supabase/ssr uses PKCE by default → redirect URL carries ?code=; older/OTP
+  // setups carry ?token_hash=&type=recovery. Handle both.
+  if (code) {
+    const { error: codeErr } = await supabase.auth.exchangeCodeForSession(code);
+    if (codeErr) return { error: "This reset link has expired or already been used.", expired: true };
+  } else if (tokenHash) {
+    const { error: otpErr } = await supabase.auth.verifyOtp({
+      type: type as EmailOtpType,
+      token_hash: tokenHash,
+    });
+    if (otpErr) return { error: "This reset link has expired or already been used.", expired: true };
+  } else {
+    return { error: "Invalid or expired reset link.", expired: true };
+  }
 
-  // Update the password using the newly established session
   const { error: updateErr } = await supabase.auth.updateUser({ password });
   if (updateErr) return { error: "Unable to update password. Please try again." };
+
+  // Sign out so the user lands on the login page with the success message
+  await supabase.auth.signOut();
 
   redirect("/auth/login?message=password-updated");
 }

@@ -4,7 +4,12 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { resetPassword } from "@/app/auth/actions";
 
-export default function ResetPasswordForm({ tokenHash }: { tokenHash: string }) {
+interface Props {
+  code:      string | null;
+  tokenHash: string | null;
+}
+
+export default function ResetPasswordForm({ code, tokenHash }: Props) {
   const [state, action, pending] = useActionState(resetPassword, null);
 
   return (
@@ -20,11 +25,21 @@ export default function ResetPasswordForm({ tokenHash }: { tokenHash: string }) 
         </div>
 
         <form action={action}>
-          <input type="hidden" name="token_hash" value={tokenHash} />
-          <input type="hidden" name="type"       value="recovery" />
+          {/* Pass whichever token format Supabase used in the reset email */}
+          {code      && <input type="hidden" name="code"       value={code} />}
+          {tokenHash && <input type="hidden" name="token_hash" value={tokenHash} />}
+          <input type="hidden" name="type" value="recovery" />
+
           <div className="auth-body">
             {state?.error && (
-              <div className="auth-global-err">{state.error}</div>
+              <div className="auth-global-err">
+                {state.error}{" "}
+                {state.expired && (
+                  <Link href="/auth/forgot-password" style={{ color: "inherit", fontWeight: 700 }}>
+                    Request a new link.
+                  </Link>
+                )}
+              </div>
             )}
 
             <div className="auth-field">
