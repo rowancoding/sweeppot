@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 import type { EmailOtpType } from "@supabase/supabase-js";
 
 export async function login(
-  _prev: { error: string } | null,
+  _prev: { error: string; email?: string } | null,
   formData: FormData
-): Promise<{ error: string }> {
+): Promise<{ error: string; email?: string }> {
   const email    = formData.get("email")    as string;
   const password = formData.get("password") as string;
   const next     = (formData.get("next")    as string | null) || "/";
@@ -22,9 +22,9 @@ export async function login(
   if (error) {
     const msg = error.message.toLowerCase();
     if (msg.includes("invalid login credentials") || msg.includes("invalid credentials")) {
-      return { error: "Incorrect password. Please try again." };
+      return { error: "Incorrect password. Please try again.", email };
     }
-    return { error: "Unable to sign in. Please check your details and try again." };
+    return { error: "Unable to sign in. Please check your details and try again.", email };
   }
 
   redirect(next);

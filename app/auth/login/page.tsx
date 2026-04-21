@@ -43,6 +43,7 @@ function LoginForm() {
                 type="email"
                 placeholder="you@example.com"
                 autoComplete="email"
+                defaultValue={state?.email ?? ""}
                 required
               />
             </div>
