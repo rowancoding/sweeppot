@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
+import type { EmailOtpType } from "@supabase/supabase-js";
 
 export async function login(
   _prev: { error: string } | null,
@@ -18,15 +19,21 @@ export async function login(
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) return { error: error.message };
+  if (error) {
+    const msg = error.message.toLowerCase();
+    if (msg.includes("invalid login credentials") || msg.includes("invalid credentials")) {
+      return { error: "Incorrect password. Please try again." };
+    }
+    return { error: "Unable to sign in. Please check your details and try again." };
+  }
 
   redirect(next);
 }
 
 export async function signup(
-  _prev: { error: string } | null,
+  _prev: { error?: string; emailExists?: boolean } | null,
   formData: FormData
-): Promise<{ error: string }> {
+): Promise<{ error?: string; emailExists?: boolean }> {
   const email       = formData.get("email")        as string;
   const password    = formData.get("password")     as string;
   const displayName = formData.get("display_name") as string;
@@ -67,9 +74,63 @@ export async function signup(
     },
   });
 
-  if (error) return { error: error.message };
+  if (error) {
+    const msg = error.message.toLowerCase();
+    if (msg.includes("already registered") || msg.includes("already exists") || msg.includes("user already")) {
+      return { emailExists: true };
+    }
+    return { error: "Unable to create account. Please try again." };
+  }
 
   redirect(next);
+}
+
+export async function forgotPassword(
+  _prev: { error?: string; success?: boolean } | null,
+  formData: FormData
+): Promise<{ error?: string; success?: boolean }> {
+  const email = formData.get("email") as string;
+  if (!email) return { error: "Email address is required." };
+
+  const supabase = await createClient();
+  const siteUrl  = process.env.NEXT_PUBLIC_SITE_URL || "https://sweeppot.com";
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/reset-password`,
+  });
+
+  if (error) return { error: "Unable to send reset email. Please try again." };
+  return { success: true };
+}
+
+export async function resetPassword(
+  _prev: { error?: string } | null,
+  formData: FormData
+): Promise<{ error?: string }> {
+  const password        = formData.get("password")         as string;
+  const confirmPassword = formData.get("confirm_password") as string;
+  const tokenHash       = formData.get("token_hash")       as string;
+  const type            = (formData.get("type") as string) || "recovery";
+
+  if (!password || !confirmPassword) return { error: "Both password fields are required." };
+  if (password !== confirmPassword)   return { error: "Passwords do not match." };
+  if (password.length < 8)            return { error: "Password must be at least 8 characters." };
+  if (!tokenHash)                     return { error: "Invalid or expired reset link. Please request a new one." };
+
+  const supabase = await createClient();
+
+  // Exchange the recovery token for a session
+  const { error: otpErr } = await supabase.auth.verifyOtp({
+    type: type as EmailOtpType,
+    token_hash: tokenHash,
+  });
+  if (otpErr) return { error: "This reset link has expired or already been used. Please request a new one." };
+
+  // Update the password using the newly established session
+  const { error: updateErr } = await supabase.auth.updateUser({ password });
+  if (updateErr) return { error: "Unable to update password. Please try again." };
+
+  redirect("/auth/login?message=password-updated");
 }
 
 export async function resendVerification(): Promise<{ error?: string; success?: boolean }> {

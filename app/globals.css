@@ -432,6 +432,7 @@ body.light-mode .auth-btn { color: #fff; }
 .auth-link a { color: var(--green); text-decoration: none; font-weight: 600; }
 .auth-link a:hover { text-decoration: underline; }
 .auth-global-err { background: rgba(255,82,82,0.08); border: 1px solid rgba(255,82,82,0.3); padding: 0.65rem 0.9rem; font-size: 0.8rem; color: var(--red); }
+.auth-global-ok  { background: rgba(198,241,53,0.07); border: 1px solid rgba(198,241,53,0.3); padding: 0.65rem 0.9rem; font-size: 0.8rem; color: var(--green); }
 
 /* ── CREATE POOL WIZARD ── */
 .create-wrap { min-height: 100vh; background: var(--dark); display: flex; flex-direction: column; }

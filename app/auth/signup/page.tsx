@@ -35,7 +35,18 @@ function SignupForm() {
         <form action={action}>
           {next && <input type="hidden" name="next" value={next} />}
           <div className="auth-body">
-            {state?.error && (
+            {state?.emailExists && (
+              <div className="auth-global-err">
+                An account with this email already exists.{" "}
+                <Link
+                  href={next ? `/auth/login?next=${encodeURIComponent(next)}` : "/auth/login"}
+                  style={{ color: "inherit", fontWeight: 700 }}
+                >
+                  Please sign in instead.
+                </Link>
+              </div>
+            )}
+            {state?.error && !state.emailExists && (
               <div className="auth-global-err">{state.error}</div>
             )}
 

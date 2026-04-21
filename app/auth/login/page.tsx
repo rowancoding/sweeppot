@@ -9,7 +9,8 @@ import { login } from "@/app/auth/actions";
 function LoginForm() {
   const [state, action, pending] = useActionState(login, null);
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "";
+  const next    = searchParams.get("next") || "";
+  const message = searchParams.get("message");
 
   return (
     <div className="auth-wrap">
@@ -26,6 +27,9 @@ function LoginForm() {
         <form action={action}>
           {next && <input type="hidden" name="next" value={next} />}
           <div className="auth-body">
+            {message === "password-updated" && (
+              <div className="auth-global-ok">Password updated. Please sign in.</div>
+            )}
             {state?.error && (
               <div className="auth-global-err">{state.error}</div>
             )}
@@ -54,6 +58,11 @@ function LoginForm() {
                 autoComplete="current-password"
                 required
               />
+              <div style={{ textAlign: "right", marginTop: "0.3rem" }}>
+                <Link href="/auth/forgot-password" style={{ fontSize: "0.7rem", color: "var(--muted)", textDecoration: "none" }}>
+                  Forgot password?
+                </Link>
+              </div>
             </div>
           </div>
 
