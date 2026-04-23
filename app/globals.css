@@ -11,7 +11,7 @@
   --green: #C6F135; --gold: #78909C;
   --dark: #1E2936; --dark2: #263545; --dark3: #2D3E50; --card: #263545;
   --border: rgba(198,241,53,0.18); --text: #ECEFF1;
-  --muted: rgba(236,239,241,0.5); --dim: rgba(236,239,241,0.22);
+  --muted: rgba(236,239,241,0.72); --dim: rgba(236,239,241,0.45);
   --red: #FF5252; --blue: #40C4FF;
   --toggle-bg: rgba(198,241,53,0.12); --toggle-border: rgba(198,241,53,0.3); --toggle-text: #C6F135;
 }
@@ -19,7 +19,7 @@ body.light-mode {
   --green: #1B5E20; --gold: #2E7D32;
   --dark: #FFFFFF; --dark2: #F5F5F5; --dark3: #EEEEEE; --card: #FFFFFF;
   --border: rgba(27,94,32,0.15); --text: #1A1A1A;
-  --muted: #666666; --dim: #AAAAAA;
+  --muted: #444444; --dim: #666666;
   --red: #C62828; --blue: #1565C0;
   --toggle-bg: rgba(27,94,32,0.08); --toggle-border: rgba(27,94,32,0.25); --toggle-text: #1B5E20;
 }
