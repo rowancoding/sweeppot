@@ -92,7 +92,7 @@ export default function CreatePool() {
   const isPlayerValid = teamCount % playerCount === 0;
   const teamsPerPlayer = isPlayerValid ? teamCount / playerCount : 0;
   const pot = entryMode === "paid" ? playerCount * betAmt : 0;
-  const fee = pot * 0.05;
+  const fee = pot * 0.10;
   const winnerGets = pot - fee;
 
   const koRounds = Object.entries(cfg.ko) as [string, { label: string; teams: number }][];
@@ -389,7 +389,7 @@ export default function CreatePool() {
                             Winner Gets
                           </div>
                           <div className="pot-amt">${winnerGets.toFixed(0)}</div>
-                          <div className="pot-fee">After 5% fee (${fee.toFixed(2)})</div>
+                          <div className="pot-fee">After 10% service fee (${fee.toFixed(2)})</div>
                         </div>
                       </div>
                     </>
@@ -608,11 +608,15 @@ export default function CreatePool() {
                   {entryMode === "paid" && (
                     <>
                       <div className="rev-item">
-                        <div className="rev-key">Total Pot</div>
+                        <div className="rev-key">Prize Pot</div>
                         <div className="rev-val rv-o">${pot.toFixed(0)} AUD</div>
                       </div>
                       <div className="rev-item">
-                        <div className="rev-key">Winner Gets</div>
+                        <div className="rev-key">Service Fee (10%)</div>
+                        <div className="rev-val" style={{ color: "var(--muted)" }}>−${fee.toFixed(0)} AUD</div>
+                      </div>
+                      <div className="rev-item">
+                        <div className="rev-key">Winner Receives</div>
                         <div className="rev-val rv-o">${winnerGets.toFixed(0)} AUD</div>
                       </div>
                     </>
@@ -650,7 +654,7 @@ export default function CreatePool() {
                   />
                   <span className="terms-txt">
                     I confirm this is a private pool between friends and agree to the{" "}
-                    <a href="#">Sweeppot Terms</a>. The 5% fee is non-refundable once teams are
+                    <a href="#">Sweeppot Terms</a>. The 10% service fee is non-refundable once teams are
                     assigned.
                   </span>
                 </label>

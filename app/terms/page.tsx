@@ -34,7 +34,7 @@ const SECTIONS = [
   {
     n: 7,
     title: "Platform Fee",
-    body: "Sweeppot charges a 5% platform fee on all paid pools. This fee is deducted from the prize pot before payout. Free pools are not subject to any fee.",
+    body: "Sweeppot charges a 10% service fee on all paid pools. This fee covers payment processing and platform costs, and is deducted from the prize pot before payout. Free pools are not subject to any fee.",
   },
   {
     n: 8,

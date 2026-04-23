@@ -173,7 +173,7 @@ interface AssignedResult { team: Team; player: string; isYou: boolean; }
 function runBracketAnimation(assigned: AssignedResult[], pot: number) {
   cleanupDemo();
   const myTeam = assigned.find(r => r.isYou) || assigned[0];
-  const prize  = pot - Math.round(pot * 0.05);
+  const prize  = pot - Math.round(pot * 0.10);
 
   // Build bracket rounds
   const r16Matches = [
@@ -724,13 +724,13 @@ export default function SweeppotApp() {
                   <button className="lp-btn-ghost" onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })}>See how it works ↓</button>
                 </div>
                 <div className="lp-stats">
-                  <div className="lp-stat"><div className="lp-stat-n">$0</div><div className="lp-stat-l">Lost to no-shows</div></div>
+                  <div className="lp-stat"><div className="lp-stat-n" style={{ fontSize: "0.85rem" }}>No chasing</div><div className="lp-stat-l">Automated from entry to payout</div></div>
                   <div className="lp-stat-div" />
-                  <div className="lp-stat"><div className="lp-stat-n">5%</div><div className="lp-stat-l">Platform fee only</div></div>
+                  <div className="lp-stat"><div className="lp-stat-n" style={{ fontSize: "0.85rem" }}>Auto-paid</div><div className="lp-stat-l">Winner paid via Stripe — secure &amp; instant</div></div>
                   <div className="lp-stat-div" />
-                  <div className="lp-stat"><div className="lp-stat-n">Free</div><div className="lp-stat-l">Entry option available</div></div>
+                  <div className="lp-stat"><div className="lp-stat-n">10%</div><div className="lp-stat-l">Service fee — every entry goes into the pot</div></div>
                 </div>
-                <div className="lp-stripe-badge">🔒 Payments secured by <strong>Stripe</strong></div>
+                <div className="lp-stripe-badge">🔒 Payments secured by <strong>Stripe</strong> — entry fees held in escrow until the tournament ends</div>
               </div>
               <div className="lp-hero-right">
                 <div className="lp-mock-card">
@@ -743,7 +743,7 @@ export default function SweeppotApp() {
                     <div className="lp-mock-team">🇺🇸 USA <span className="lp-tier-pill">Tier 2</span></div>
                     <div className="lp-mock-yours">⭐ Your teams</div>
                   </div>
-                  <div className="lp-mock-payout">Your payout: <strong>$152.00</strong></div>
+                  <div className="lp-mock-payout">Your payout: <strong>$144.00</strong></div>
                 </div>
               </div>
             </div>
@@ -816,7 +816,7 @@ export default function SweeppotApp() {
             <div className="lp-steps">
               {[
                 { n:1, title:"Create your sweepstake",    desc:"Choose the tournament, set the entry fee or make it free, pick your player limit, and send the invite link." },
-                { n:2, title:"Everyone pays up front",    desc:"Each player pays their entry fee by card. Funds are held securely until the winner is confirmed." },
+                { n:2, title:"Everyone pays up front",    desc:"Each player pays their entry fee by card. Funds are held securely in escrow until the winner is confirmed. A 10% service fee covers payment processing and platform costs — every penny of your entry fee goes into the prize pot." },
                 { n:3, title:"The draw happens together", desc:"When everyone is in or the deadline arrives, teams are drawn for all players at the same moment." },
                 { n:4, title:"Follow the tournament live",desc:"Your sweepstake page tracks every match. See who is still in, who has been knocked out, and who is leading." },
                 { n:5, title:"Winner paid automatically", desc:"When the final whistle blows, the prize pot goes straight to the winner. No chasing. No awkward conversations." },

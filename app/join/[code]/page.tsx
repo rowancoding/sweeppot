@@ -113,7 +113,7 @@ export default async function JoinPage({
             <h3>You&apos;ve been invited to join</h3>
             <p>
               {pool.bet_aud > 0
-                ? `Pay $${pool.bet_aud} AUD to reserve your spot. Once everyone has joined — or the deadline arrives — teams are drawn simultaneously. No one sees any teams until that shared reveal moment.`
+                ? `Your card won't be charged until the pool is full. Once everyone has joined — or the deadline arrives — teams are drawn simultaneously and your payment is captured. If the pool doesn't fill, your hold is released automatically — no charge made.`
                 : "Join this free sweepstake. Once everyone is in, teams are drawn simultaneously and revealed to all players at the same moment."}
             </p>
 

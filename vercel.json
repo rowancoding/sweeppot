@@ -3,5 +3,15 @@
   "buildCommand": "next build",
   "outputDirectory": ".next",
   "devCommand": "next dev --port $PORT",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "crons": [
+    {
+      "path": "/api/cron/expire-pools",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/reauthorize",
+      "schedule": "0 9 * * *"
+    }
+  ]
 }

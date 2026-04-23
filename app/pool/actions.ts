@@ -1,6 +1,8 @@
 "use server";
 
+import Stripe from "stripe";
 import { createClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import { COMP_TEAMS, assignTeams } from "@/lib/teams";
 
@@ -276,6 +278,30 @@ export async function startDraw(poolId: string): Promise<{ error: string } | voi
     .eq("id", poolId);
 
   if (updateErr) return { error: updateErr.message };
+
+  // Capture all held PaymentIntents now the pool is confirmed active
+  const { data: paidParts } = await createAdminClient()
+    .from("participants")
+    .select("id, payment_intent_id")
+    .eq("pool_id", poolId)
+    .eq("payment_status", "held")
+    .not("payment_intent_id", "is", null);
+
+  if (paidParts && paidParts.length > 0) {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    const admin  = createAdminClient();
+    for (const part of paidParts) {
+      try {
+        await stripe.paymentIntents.capture(part.payment_intent_id as string);
+        await admin
+          .from("participants")
+          .update({ payment_status: "captured" })
+          .eq("id", part.id);
+      } catch {
+        // Log but don't abort the draw — pool is already active
+      }
+    }
+  }
 
   redirect(`/pool/${poolId}`);
 }

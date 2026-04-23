@@ -228,7 +228,7 @@ export default async function PoolPage({
                     ? `${winner.display_name} wins with ${winner.team_assignments[0]?.team_flag} ${winner.team_assignments[0]?.team_name}`
                     : "Tournament complete."}
                   {typedPool.bet_aud > 0 &&
-                    ` · $${(typedPool.bet_aud * paidCount * 0.95).toFixed(0)} AUD`}
+                    ` · $${(typedPool.bet_aud * paidCount * 0.90).toFixed(0)} AUD`}
                 </p>
               </>
             ) : (

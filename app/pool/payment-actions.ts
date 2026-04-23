@@ -3,6 +3,11 @@
 import Stripe from "stripe";
 import { createClient } from "@/lib/supabase-server";
 
+// AUD processing fee: 2.9% + A$0.30
+function processingFee(amountAud: number): number {
+  return Math.round(amountAud * 0.029 * 100 + 30); // result in cents
+}
+
 export async function createCheckoutSession(
   _prev: { url?: string; error?: string } | null,
   formData: FormData
@@ -61,8 +66,9 @@ export async function createCheckoutSession(
 
   const displayName = profile?.display_name || user.email?.split("@")[0] || "Player";
 
-  // Determine currency — default AUD
   const currency = "aud";
+  const entryAmountCents = Math.round(pool.bet_aud * 100);
+  const feeAmountCents   = processingFee(pool.bet_aud);
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sweeppot.com";
@@ -70,12 +76,25 @@ export async function createCheckoutSession(
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
+    customer_creation: "always",
+    payment_intent_data: {
+      capture_method: "manual",
+      setup_future_usage: "off_session",
+    },
     line_items: [
       {
         price_data: {
           currency,
           product_data: { name: `${pool.name} — Entry Fee` },
-          unit_amount: Math.round(pool.bet_aud * 100), // cents
+          unit_amount: entryAmountCents,
+        },
+        quantity: 1,
+      },
+      {
+        price_data: {
+          currency,
+          product_data: { name: "Stripe Processing Fee" },
+          unit_amount: feeAmountCents,
         },
         quantity: 1,
       },

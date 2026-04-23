@@ -38,7 +38,32 @@ export async function POST(request: Request) {
     const { pool_id, user_id, display_name } = meta;
     const supabase = createAdminClient();
 
-    // Idempotency — skip if participant already exists and is paid
+    // Retrieve the PaymentIntent to get payment_method and customer
+    let paymentIntentId: string | null = null;
+    let paymentMethodId: string | null = null;
+    const customerId = typeof session.customer === "string" ? session.customer : null;
+    const heldAt = new Date().toISOString();
+    // Authorization holds expire after 7 days (Stripe limit)
+    const expiresAt = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString();
+
+    if (session.payment_intent) {
+      paymentIntentId = typeof session.payment_intent === "string"
+        ? session.payment_intent
+        : session.payment_intent.id;
+
+      try {
+        const pi = await stripe.paymentIntents.retrieve(paymentIntentId);
+        paymentMethodId = typeof pi.payment_method === "string"
+          ? pi.payment_method
+          : (pi.payment_method?.id ?? null);
+      } catch {
+        // Non-fatal — we still have the PI ID
+      }
+    }
+
+    const isReauth = meta.reauth === "true";
+
+    // Idempotency — skip if participant already exists and is paid (unless reauth)
     const { data: existing } = await supabase
       .from("participants")
       .select("id, paid")
@@ -47,10 +72,18 @@ export async function POST(request: Request) {
       .maybeSingle();
 
     if (existing) {
-      if (!existing.paid) {
+      if (!existing.paid || isReauth) {
         await supabase
           .from("participants")
-          .update({ paid: true })
+          .update({
+            paid: true,
+            payment_intent_id:  paymentIntentId,
+            payment_method_id:  paymentMethodId,
+            stripe_customer_id: customerId,
+            payment_status:     "held",
+            payment_held_at:    heldAt,
+            payment_expires_at: expiresAt,
+          })
           .eq("id", existing.id);
       }
     } else {
@@ -72,9 +105,15 @@ export async function POST(request: Request) {
           await supabase.from("participants").insert({
             pool_id,
             user_id,
-            display_name: display_name || "Player",
-            paid: true,
-            spun: false,
+            display_name:       display_name || "Player",
+            paid:               true,
+            spun:               false,
+            payment_intent_id:  paymentIntentId,
+            payment_method_id:  paymentMethodId,
+            stripe_customer_id: customerId,
+            payment_status:     "held",
+            payment_held_at:    heldAt,
+            payment_expires_at: expiresAt,
           });
         }
       }
