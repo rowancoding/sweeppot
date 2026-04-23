@@ -19,7 +19,7 @@ export default async function UpdatePaymentPage({
 
   const { data: pool } = await supabase
     .from("pools")
-    .select("id, name, comp, status, bet_aud, invite_code")
+    .select("id, name, comp, status, bet_aud")
     .eq("id", poolId)
     .single();
 
@@ -57,7 +57,6 @@ export default async function UpdatePaymentPage({
       poolId={poolId}
       poolName={pool.name}
       betAud={pool.bet_aud}
-      inviteCode={pool.invite_code}
     />
   );
 }

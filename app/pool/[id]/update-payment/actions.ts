@@ -2,10 +2,7 @@
 
 import Stripe from "stripe";
 import { createClient } from "@/lib/supabase-server";
-
-function processingFee(amountAud: number): number {
-  return Math.round(amountAud * 0.029 * 100 + 30); // cents
-}
+import { processingFee } from "@/lib/fees";
 
 export async function createReauthorizeSession(
   _prev: { url?: string; error?: string } | null,
@@ -18,8 +15,7 @@ export async function createReauthorizeSession(
 
   if (!user) return { error: "You must be signed in." };
 
-  const poolId     = formData.get("pool_id")     as string;
-  const inviteCode = formData.get("invite_code") as string;
+  const poolId = formData.get("pool_id") as string;
 
   const { data: pool } = await supabase
     .from("pools")

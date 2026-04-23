@@ -5,13 +5,12 @@ import Link from "next/link";
 import { createReauthorizeSession } from "./actions";
 
 interface Props {
-  poolId:     string;
-  poolName:   string;
-  betAud:     number;
-  inviteCode: string;
+  poolId:   string;
+  poolName: string;
+  betAud:   number;
 }
 
-export default function UpdatePaymentForm({ poolId, poolName, betAud, inviteCode }: Props) {
+export default function UpdatePaymentForm({ poolId, poolName, betAud }: Props) {
   const [state, action, pending] = useActionState(createReauthorizeSession, null);
 
   useEffect(() => {
@@ -35,7 +34,6 @@ export default function UpdatePaymentForm({ poolId, poolName, betAud, inviteCode
 
         <form action={action}>
           <input type="hidden" name="pool_id"     value={poolId} />
-          <input type="hidden" name="invite_code" value={inviteCode} />
           <div className="auth-body">
             {state?.error && (
               <div className="auth-global-err">{state.error}</div>

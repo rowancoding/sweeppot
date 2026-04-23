@@ -2,11 +2,7 @@
 
 import Stripe from "stripe";
 import { createClient } from "@/lib/supabase-server";
-
-// AUD processing fee: 2.9% + A$0.30
-function processingFee(amountAud: number): number {
-  return Math.round(amountAud * 0.029 * 100 + 30); // result in cents
-}
+import { processingFee } from "@/lib/fees";
 
 export async function createCheckoutSession(
   _prev: { url?: string; error?: string } | null,
