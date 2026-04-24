@@ -95,7 +95,7 @@ function launchConfetti() {
 const NARRATOR = [
   {step:'Step 1 of 6', text:'8 friends join the pool and pay their entry fee upfront — funds are held securely until the tournament ends'},
   {step:'Step 2 of 6', text:"Everyone's in. Teams are assigned randomly and fairly by Sweeppot — no one can influence the draw"},
-  {step:'Step 3 of 6', text:"Spin the wheel to reveal your team — it's pure chance, assigned the moment the pool filled"},
+  {step:'Step 3 of 6', text:"Spin the wheel to reveal your team — it's pure chance, assigned the moment the pool fills"},
   {step:'Step 3 of 6', text:'Every player gets a different team. No two players share a team'},
   {step:'Step 4 of 6', text:'Your team enters the tournament — follow their progress through every knockout round'},
   {step:'Step 5 of 6', text:'Still in it — every win brings you closer to the prize pot'},
@@ -135,7 +135,7 @@ function showDemoPaymentInterstitial(winAmt: number, team: Team) {
         + '<span style="font-size:1.6rem;">' + (t.f || "🏆") + '</span>'
         + '<div>'
           + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:1.5rem;color:var(--green);letter-spacing:0.05em;">' + (t.n || "Your Team") + ' Won the Tournament</div>'
-          + '<div style="font-size:0.65rem;color:rgba(198,241,53,0.6);text-transform:uppercase;letter-spacing:0.1em;">Your team ⭐</div>'
+          + '<div style="font-size:0.65rem;color:rgba(198,241,53,0.6);text-transform:uppercase;letter-spacing:0.1em;">Your team</div>'
         + '</div>'
         + '<div style="margin-left:auto;font-size:0.8rem;color:var(--green);font-weight:700;">Won on penalties!</div>'
       + '</div>'
@@ -149,9 +149,14 @@ function showDemoPaymentInterstitial(winAmt: number, team: Team) {
       + '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:0.5rem;">Payment Status</div>'
       + '<div style="font-size:0.95rem;color:#ECEFF1;line-height:1.7;font-weight:500;">Your prize is being processed and will be credited automatically to the payment method you used to enter. <span style="color:rgba(198,241,53,0.85);">Payments are processed automatically and securely via Stripe.</span></div>'
     + '</div>'
+    + '<div id="payInterActions" style="text-align:center;margin-top:0.5rem;"></div>'
     + '</div>';
   document.body.appendChild(overlay);
-  setTimeout(() => { overlay.remove(); showDemoWinnerBanner(winAmt, team); }, 3500);
+  const payNextBtn = document.createElement("button");
+  payNextBtn.textContent = "Collect Winnings →";
+  payNextBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.75rem 1.9rem;font-family:var(--font-barlow-condensed),sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);";
+  payNextBtn.onclick = () => { overlay.remove(); showDemoWinnerBanner(winAmt, team); };
+  document.getElementById("payInterActions")?.appendChild(payNextBtn);
 }
 
 function showDemoWinnerBanner(winAmt: number, team: Team) {
@@ -163,10 +168,9 @@ function showDemoWinnerBanner(winAmt: number, team: Team) {
   banner.innerHTML =
     '<div style="background:var(--dark2);border:2px solid var(--green);max-width:440px;width:100%;padding:2.2rem;text-align:center;position:relative;">'
     + '<button onclick="window.__sweeppotGoHome()" style="position:absolute;top:0.7rem;right:0.9rem;background:transparent;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;">✕</button>'
-    + '<div style="font-size:2.8rem;margin-bottom:0.5rem;">🏆</div>'
     + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:2.5rem;color:var(--green);letter-spacing:0.05em;margin-bottom:0.2rem;">You Win!</div>'
     + '<div style="font-size:0.88rem;color:var(--muted);margin-bottom:0.8rem;">' + (t.f || "") + "&nbsp;" + t.n + " won the tournament</div>"
-    + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:3rem;color:var(--gold);letter-spacing:0.03em;margin-bottom:1rem;">' + (winAmt > 0 ? "$" + winAmt + " AUD" : "🏆 Winner!") + " </div>"
+    + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:3rem;color:var(--gold);letter-spacing:0.03em;margin-bottom:1rem;">' + (winAmt > 0 ? "$" + winAmt + " AUD" : "Winner!") + " </div>"
     + '<div style="font-size:0.95rem;color:#ECEFF1;line-height:1.75;margin-bottom:1.6rem;padding:0 0.5rem;">'
       + (winAmt > 0 ? "Your winnings have been processed and will be credited to the card or account you used to enter. Payments are processed automatically and securely via Stripe." : "This was a free sweepstake — bragging rights this time. Set up a paid pool to play for real.")
     + '</div>'
@@ -236,7 +240,7 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
       + '<span style="font-size:0.9rem;width:20px;text-align:center;">' + (r.team.f || "⚽") + "</span>"
       + '<div style="flex:1;">'
         + '<div style="font-weight:700;font-size:0.82rem;color:' + (iy ? "var(--green)" : "var(--text)") + ';">'
-          + r.team.n + (iy ? ' <span style="font-size:0.6rem;color:var(--gold);">⭐</span>' : "") + "</div>"
+          + r.team.n + "</div>"
         + '<div style="font-size:0.6rem;color:' + (iy ? "var(--green)" : "var(--dim)") + ';">' + (iy ? "Your team" : r.player) + "</div>"
       + "</div>"
       + (won ? '<div style="font-size:0.7rem;color:var(--green);font-weight:700;">' + score + "</div>" : "")
@@ -244,47 +248,79 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
   }
 
   function showRound(idx: number) {
+    const statusEl = document.getElementById("bracketAnimStatus");
     if (idx >= bracket.length) {
-      setTimeout(() => { overlay.remove(); showDemoPaymentInterstitial(prize, myTeam.team); }, 2000);
+      if (statusEl) statusEl.innerHTML = "";
+      const endDiv = document.createElement("div");
+      endDiv.style.cssText = "text-align:center;padding:1rem 0;";
+      const endBtn = document.createElement("button");
+      endBtn.textContent = "Next →";
+      endBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.6rem 1.5rem;font-weight:700;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;";
+      endBtn.onclick = () => { overlay.remove(); showDemoPaymentInterstitial(prize, myTeam.team); };
+      endDiv.appendChild(endBtn);
+      if (statusEl) statusEl.appendChild(endDiv);
       return;
     }
     const rd = bracket[idx];
     const isFinal = idx === 3;
-    const statusEl = document.getElementById("bracketAnimStatus");
     if (statusEl) {
       statusEl.innerHTML = isFinal
-        ? '<span style="color:var(--green);font-weight:700;font-size:1rem;">🏆 THE FINAL — $' + prize + ' AUD on the line</span>'
+        ? '<span style="color:var(--green);font-weight:700;font-size:1rem;">THE FINAL — $' + prize + ' AUD on the line</span>'
         : '<span style="color:var(--green);">' + rd.round + " · " + rd.date + "</span>";
+      if (idx === 0) {
+        const introEl = document.createElement("div");
+        introEl.style.cssText = "font-size:0.78rem;color:var(--muted);margin-top:0.5rem;line-height:1.6;";
+        introEl.textContent = "Watch as your team progresses through the competition. Hopefully they go all the way.";
+        statusEl.appendChild(introEl);
+      }
     }
-    // Narrator: R16=4, QF=5, SF=6, Final=7
-    showNarrator([4,5,6,7][idx-1]||4);
+    showNarrator([4,5,6,7][idx] || 4);
     const content = document.getElementById("bracketAnimContent");
     if (!content) return;
-    const el = document.createElement("div");
-    el.style.cssText = "margin-bottom:1.5rem;opacity:0;transition:opacity 0.6s;";
-    el.innerHTML =
+    const roundEl = document.createElement("div");
+    roundEl.style.cssText = "margin-bottom:1.5rem;";
+    roundEl.innerHTML =
       '<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--green);margin-bottom:0.7rem;border-bottom:1px solid var(--border);padding-bottom:0.4rem;">'
         + rd.round + '<span style="font-weight:400;font-size:0.58rem;opacity:0.7;margin-left:0.6rem;">' + rd.date + "</span></div>"
-      + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.5rem;">'
-        + rd.matches.map(m => {
-            const w = m.homeWin ? m.home : m.away;
-            return '<div style="background:var(--card);border:1px solid ' + (w.isYou ? "rgba(198,241,53,0.4)" : "var(--border)") + ';padding:0.55rem 0.7rem;">'
-              + teamLine(m.home as AssignedResult, m.homeWin, m.score)
-              + '<div style="height:1px;background:var(--border);margin:0.15rem 0;"></div>'
-              + teamLine(m.away as AssignedResult, !m.homeWin, m.score)
-              + "</div>";
-          }).join("")
-      + "</div>"
-      + (isFinal
-          ? '<div style="text-align:center;margin-top:1rem;padding:0.75rem;background:rgba(198,241,53,0.06);border:1px solid rgba(198,241,53,0.25);">'
-            + '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Prize Pot</div>'
-            + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:2rem;color:var(--green);">$' + prize + " AUD</div>"
-            + '<div style="font-size:0.65rem;color:var(--dim);">Winner takes all — paid automatically and securely via Stripe</div></div>'
-          : "");
-    content.appendChild(el);
-    requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = "1"; }));
-    setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
-    setTimeout(() => showRound(idx + 1), isFinal ? 3000 : 2000);
+      + '<div id="matchGrid_' + idx + '" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.5rem;"></div>';
+    content.appendChild(roundEl);
+    setTimeout(() => roundEl.scrollIntoView({ behavior: "smooth", block: "start" }), 200);
+    const matchGrid = document.getElementById("matchGrid_" + idx);
+    if (!matchGrid) return;
+    rd.matches.forEach((m, mi) => {
+      setTimeout(() => {
+        const w = m.homeWin ? m.home : m.away;
+        const card = document.createElement("div");
+        card.style.cssText = "background:var(--card);border:1px solid " + (w.isYou ? "rgba(198,241,53,0.4)" : "var(--border)") + ";padding:0.55rem 0.7rem;opacity:0;transition:opacity 0.5s;";
+        card.innerHTML =
+          teamLine(m.home as AssignedResult, m.homeWin, m.score)
+          + '<div style="height:1px;background:var(--border);margin:0.15rem 0;"></div>'
+          + teamLine(m.away as AssignedResult, !m.homeWin, m.score);
+        matchGrid.appendChild(card);
+        requestAnimationFrame(() => requestAnimationFrame(() => { card.style.opacity = "1"; }));
+        if (mi === rd.matches.length - 1) {
+          setTimeout(() => {
+            if (isFinal) {
+              const prizePotEl = document.createElement("div");
+              prizePotEl.style.cssText = "text-align:center;margin-top:1rem;padding:0.75rem;background:rgba(198,241,53,0.06);border:1px solid rgba(198,241,53,0.25);";
+              prizePotEl.innerHTML =
+                '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Prize Pot</div>'
+                + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:2rem;color:var(--green);">$' + prize + " AUD</div>"
+                + '<div style="font-size:0.65rem;color:var(--dim);">Winner takes all — paid automatically and securely via Stripe</div>';
+              roundEl.appendChild(prizePotEl);
+            }
+            const nextDiv = document.createElement("div");
+            nextDiv.style.cssText = "text-align:center;padding:1rem 0;";
+            const nextBtn = document.createElement("button");
+            nextBtn.textContent = "Next →";
+            nextBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.6rem 1.5rem;font-weight:700;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;";
+            nextBtn.onclick = () => { nextDiv.remove(); showRound(idx + 1); };
+            nextDiv.appendChild(nextBtn);
+            roundEl.appendChild(nextDiv);
+          }, 500);
+        }
+      }, mi * 1500);
+    });
   }
   showRound(0);
 }
@@ -300,12 +336,11 @@ function showDemoPoolFullPopup(pot: number) {
   popup.innerHTML =
     '<div style="background:var(--dark2);border:2px solid var(--green);max-width:420px;width:100%;padding:2rem;text-align:center;position:relative;">'
     + '<button onclick="window.__sweeppotGoHome()" style="position:absolute;top:0.7rem;right:0.9rem;background:transparent;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;">✕</button>'
-    + '<div style="font-size:2.2rem;margin-bottom:0.6rem;">🎉</div>'
     + '<div style="font-size:1.8rem;font-weight:900;color:var(--green);letter-spacing:0.05em;margin-bottom:0.5rem;">Pool Is Full!</div>'
     + '<div style="font-size:0.95rem;color:var(--muted);margin-bottom:0.4rem;">All 8 players have paid in.</div>'
     + '<div style="font-size:0.95rem;color:#ECEFF1;margin-bottom:1.6rem;font-weight:500;">Time to spin the wheel and find out your team.</div>'
     + '<button id="demoPoolFullBtn" style="background:var(--green);color:var(--dark);border:none;padding:0.85rem 2rem;font-weight:700;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;width:100%;">'
-    + '🎡 Spin My Wheel →'
+    + 'Spin My Wheel →'
     + '</button>'
     + '</div>';
 
@@ -376,7 +411,7 @@ function showDemoWheelDraw(pot: number) {
     const entry = demoTeams[pqIdx] || { player: "Player " + (pqIdx + 1), isYou: false };
     const isYou = pqIdx === 0;
     pqIdx++;
-    statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">' + (isYou ? "⭐ Your turn!" : entry.player + " is drawing...") + "</span>";
+    statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">' + (isYou ? "Your turn!" : entry.player + " is drawing...") + "</span>";
     const pickIdx = Math.floor(Math.random() * remaining.length);
     const pickedTeam = remaining[pickIdx];
     const extraSpins = 3 + Math.floor(Math.random() * 2);
@@ -403,9 +438,19 @@ function showDemoWheelDraw(pot: number) {
         + ";font-size:0.7rem;color:" + (isYou ? "var(--green)" : "var(--muted)") + ";";
       badge.innerHTML = (pickedTeam.f || "") + "&nbsp;" + (isYou ? "<strong>You</strong>" : entry.player);
       assignedEl.appendChild(badge);
-      statusEl.innerHTML = '<span style="color:' + (isYou ? "var(--gold)" : "var(--muted)") + ";font-weight:" + (isYou ? "700" : "400") + ';">'
-        + (isYou ? "⭐ You got " + pickedTeam.n + "!" : pickedTeam.n + " → " + entry.player) + "</span>";
-      setTimeout(() => onDone(), isYou ? 900 : 450);
+      if (isYou) {
+        statusEl.innerHTML =
+          '<div style="font-size:1.15rem;font-weight:700;color:var(--gold);margin-bottom:0.25rem;">' + (pickedTeam.f || "") + "&nbsp;" + pickedTeam.n + "</div>"
+          + '<div style="font-size:0.7rem;color:var(--muted);margin-bottom:0.75rem;">Your team — click to continue</div>';
+        const spinNextBtn = document.createElement("button");
+        spinNextBtn.textContent = "Next →";
+        spinNextBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.6rem 1.5rem;font-weight:700;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;";
+        spinNextBtn.onclick = () => { statusEl.innerHTML = ""; onDone(); };
+        statusEl.appendChild(spinNextBtn);
+      } else {
+        statusEl.innerHTML = '<span style="color:var(--muted);font-weight:400;">' + pickedTeam.n + " → " + entry.player + "</span>";
+        setTimeout(() => onDone(), 450);
+      }
     }
     requestAnimationFrame(animFrame);
   }
@@ -415,14 +460,14 @@ function showDemoWheelDraw(pot: number) {
   const allAssigned: AssignedResult[] = [];
 
   // Show a SPIN button — let the user spin their own wheel
-  statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">⭐ Your turn — tap to spin!</span>';
+  statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">Your turn — tap to spin!</span>';
   showNarrator(2);
 
   const existingBtn = document.getElementById("demoSpinBtn");
   if (existingBtn) existingBtn.remove();
   const spinBtn = document.createElement("button");
   spinBtn.id = "demoSpinBtn";
-  spinBtn.textContent = "🎡 Spin My Wheel";
+  spinBtn.textContent = "Spin My Wheel";
   spinBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.75rem 2rem;font-weight:700;font-size:1rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;margin-top:0.5rem;";
   spinBtn.onclick = function() {
     spinBtn.remove();
@@ -444,8 +489,16 @@ function showDemoWheelDraw(pot: number) {
           assignedEl.appendChild(badge);
         }
         drawWheel2([], 0, null);
-        statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">All teams drawn! Watch them progress →</span>';
-        setTimeout(() => { overlay.remove(); runBracketAnimation(allAssigned, pot); }, 1200);
+        statusEl.innerHTML = "";
+        const allDrawnMsg = document.createElement("div");
+        allDrawnMsg.style.cssText = "text-align:center;";
+        allDrawnMsg.innerHTML = '<div style="font-size:0.9rem;font-weight:700;color:var(--green);margin-bottom:0.5rem;">All participants have been assigned their teams.</div>';
+        const toBracketBtn = document.createElement("button");
+        toBracketBtn.textContent = "Next →";
+        toBracketBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.6rem 1.5rem;font-weight:700;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:0.3rem;";
+        toBracketBtn.onclick = () => { overlay.remove(); runBracketAnimation(allAssigned, pot); };
+        allDrawnMsg.appendChild(toBracketBtn);
+        statusEl.appendChild(allDrawnMsg);
       }, 600);
     });
   };
@@ -893,7 +946,7 @@ export default function SweeppotApp() {
             <p className="lp-cta-sub">Set up your sweepstake now — the tournament kicks off June 2026.</p>
             <div className="lp-cta-btns">
               <button className="lp-btn-primary" onClick={() => window.location.href = isLoggedIn ? "/pool/create" : "/auth/signup"}>Create a Sweepstake →</button>
-              <button className="lp-btn-demo" onClick={showInviteDemo}>🎡 Try a Demo</button>
+              <button className="lp-btn-demo" onClick={showInviteDemo}>Try a Demo</button>
             </div>
           </div>
 
@@ -1020,7 +1073,7 @@ export default function SweeppotApp() {
                 <div style={{ fontSize: "0.69rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--green)", marginBottom: "0.45rem" }}>Your Name</div>
                 <input className="fi" type="text" placeholder="Enter your name" defaultValue="You" style={{ width: 220 }} />
               </div>
-              <button className="btn-gold" onClick={runDemo}>🎡 Run Demo →</button>
+              <button className="btn-gold" onClick={runDemo}>Run Demo →</button>
               <div style={{ fontSize: "0.71rem", color: "var(--muted)", lineHeight: 1.6 }}>This is a demo — no real payment needed. Watch the full automated draw from start to finish.</div>
             </div>
           </div>
