@@ -20,7 +20,7 @@ export default function ResetPasswordForm({ code, tokenHash }: Props) {
         </div>
         <div className="auth-logo">Sweeppot</div>
         <div className="auth-hdr">
-          <div className="auth-title">New Password</div>
+          <h1 className="auth-title">New Password</h1>
           <div className="auth-sub">Choose a new password for your account.</div>
         </div>
 

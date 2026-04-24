@@ -26,7 +26,7 @@ function SignupForm() {
         </div>
         <div className="auth-logo">Sweeppot</div>
         <div className="auth-hdr">
-          <div className="auth-title">Create Account</div>
+          <h1 className="auth-title">Create Account</h1>
           <div className="auth-sub">
             Set up your account to start or join sweepstakes.
           </div>

@@ -20,7 +20,7 @@ export default async function ResetPasswordPage({
           </div>
           <div className="auth-logo">Sweeppot</div>
           <div className="auth-hdr">
-            <div className="auth-title">Reset Password</div>
+            <h1 className="auth-title">Reset Password</h1>
           </div>
           <div className="auth-body">
             <div className="auth-global-err">

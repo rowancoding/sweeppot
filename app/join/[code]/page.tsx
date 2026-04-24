@@ -1,8 +1,32 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase-server";
 import { COMP_META } from "@/lib/teams";
 import JoinForm from "./JoinForm";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}): Promise<Metadata> {
+  const { code } = await params;
+  const supabase = await createClient();
+  const { data: pool } = await supabase
+    .from("pools")
+    .select("name, comp")
+    .eq("invite_code", code)
+    .single();
+
+  const meta = pool ? (COMP_META[pool.comp] ?? { label: pool.comp }) : null;
+  return {
+    title: pool ? `Join ${pool.name}` : "Join Pool",
+    description: pool && meta
+      ? `You've been invited to join ${pool.name} — a ${meta.label} sweepstake on Sweeppot.`
+      : "Join a private football sweepstake on Sweeppot.",
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function JoinPage({
   params,
@@ -73,7 +97,7 @@ export default async function JoinPage({
           <div className="ipc-comp">
             {meta.icon} {meta.label} · {pool.visibility === "private" ? "🔒 Private Pool" : "🌐 Public Pool"}
           </div>
-          <div className="ipc-name">{pool.name}</div>
+          <h1 className="ipc-name">{pool.name}</h1>
           <div className="ipc-stats">
             <div className="ipc-stat">
               <div className="ipc-sv">{pool.player_count}</div>

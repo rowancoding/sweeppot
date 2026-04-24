@@ -16,7 +16,7 @@ function ForgotPasswordForm() {
         </div>
         <div className="auth-logo">Sweeppot</div>
         <div className="auth-hdr">
-          <div className="auth-title">Reset Password</div>
+          <h1 className="auth-title">Reset Password</h1>
           <div className="auth-sub">Enter your email and we&apos;ll send you a reset link.</div>
         </div>
 

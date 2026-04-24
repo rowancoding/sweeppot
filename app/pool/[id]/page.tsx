@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
@@ -5,6 +6,27 @@ import { COMP_META } from "@/lib/teams";
 import CopyButton from "./CopyButton";
 import Countdown from "./Countdown";
 import StartDrawButton from "./StartDrawButton";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const { data: pool } = await supabase
+    .from("pools")
+    .select("name, comp")
+    .eq("id", id)
+    .single();
+
+  const meta = pool ? (COMP_META[pool.comp] ?? { label: pool.comp }) : null;
+  return {
+    title: pool ? pool.name : "Pool",
+    description: pool && meta ? `${pool.name} — ${meta.label} sweepstake on Sweeppot.` : undefined,
+    robots: { index: false, follow: false },
+  };
+}
 
 // ── Types ─────────────────────────────────────────────────────
 

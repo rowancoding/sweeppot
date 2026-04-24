@@ -20,7 +20,7 @@ function LoginForm() {
         </div>
         <div className="auth-logo">Sweeppot</div>
         <div className="auth-hdr">
-          <div className="auth-title">Sign In</div>
+          <h1 className="auth-title">Sign In</h1>
           <div className="auth-sub">Welcome back — enter your details to continue.</div>
         </div>
 

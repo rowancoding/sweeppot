@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description:
+    "Sweeppot Terms of Service — entry fees, draws, payouts, eligibility, and platform rules.",
+  robots: { index: true, follow: false },
+};
 
 const SECTIONS = [
   {

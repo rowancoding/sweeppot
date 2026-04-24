@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /pool/
+Disallow: /join/
+Disallow: /api/
+
+Sitemap: https://sweeppot.app/sitemap.xml
