@@ -49,6 +49,14 @@ const INVITED_POOLS: InvitedPool[] = [
   {id:"pool_inv2",name:"Five-a-side UCL Sweep",comp:"Champions League ⭐",from:"Sarah O'Brien",spots:2,total:6,buyin:30,pot:180,daysLeft:12},
 ];
 
+const HOW_STEPS = [
+  { n:1, title:"Create your sweepstake",    desc:"Choose the tournament, set the entry fee or make it free, pick your player limit, and send the invite link." },
+  { n:2, title:"Everyone pays up front",    desc:"Each player pays their entry fee by card. Funds are held securely in escrow until the winner is confirmed. A 10% service fee covers payment processing and platform costs — every penny of your entry fee goes into the prize pot." },
+  { n:3, title:"The draw happens together", desc:"When everyone is in or the deadline arrives, teams are drawn for all players at the same moment." },
+  { n:4, title:"Follow the tournament live",desc:"Your sweepstake page tracks every match. See who is still in, who has been knocked out, and who is leading." },
+  { n:5, title:"Winner paid automatically", desc:"When the final whistle blows, the prize pot goes straight to the winner. No chasing. No awkward conversations." },
+];
+
 // ─────────────────────────────────────────────
 // Demo overlay helpers  (plain DOM — no React state)
 // These mirror the prototype's showDemoWheelDraw / runBracketAnimation / showDemoWinnerBanner
@@ -485,6 +493,7 @@ export default function SweeppotApp() {
   const [emailNeedsVerification, setEmailNeedsVerification] = useState(false);
   const [resendPending, startResendTransition]  = useTransition();
   const [resendDone, setResendDone]             = useState(false);
+  const [demoStep, setDemoStep]                 = useState(0);
   const cdTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const howRef  = useRef<HTMLDivElement>(null);
 
@@ -813,20 +822,33 @@ export default function SweeppotApp() {
           <div className="lp-section" ref={howRef} id="lp-how">
             <div className="lp-section-tag">Simple by design</div>
             <h2 className="lp-section-title">How Sweeppot works</h2>
-            <div className="lp-steps">
-              {[
-                { n:1, title:"Create your sweepstake",    desc:"Choose the tournament, set the entry fee or make it free, pick your player limit, and send the invite link." },
-                { n:2, title:"Everyone pays up front",    desc:"Each player pays their entry fee by card. Funds are held securely in escrow until the winner is confirmed. A 10% service fee covers payment processing and platform costs — every penny of your entry fee goes into the prize pot." },
-                { n:3, title:"The draw happens together", desc:"When everyone is in or the deadline arrives, teams are drawn for all players at the same moment." },
-                { n:4, title:"Follow the tournament live",desc:"Your sweepstake page tracks every match. See who is still in, who has been knocked out, and who is leading." },
-                { n:5, title:"Winner paid automatically", desc:"When the final whistle blows, the prize pot goes straight to the winner. No chasing. No awkward conversations." },
-              ].map(s => (
-                <div className="lp-step" key={s.n}>
-                  <div className="lp-step-num">{s.n}</div>
-                  <div className="lp-step-title">{s.title}</div>
-                  <div className="lp-step-desc">{s.desc}</div>
-                </div>
-              ))}
+            <div style={{ maxWidth: 440, margin: "0 auto", textAlign: "center" }}>
+              <div className="lp-step" style={{ padding: "0 0.5rem" }}>
+                <div className="lp-step-num">{HOW_STEPS[demoStep].n}</div>
+                <div className="lp-step-title">{HOW_STEPS[demoStep].title}</div>
+                <div className="lp-step-desc">{HOW_STEPS[demoStep].desc}</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "1.8rem" }}>
+                <button
+                  className="nav-btn"
+                  onClick={() => setDemoStep(i => i - 1)}
+                  style={{ visibility: demoStep === 0 ? "hidden" : "visible" }}
+                >
+                  ← Back
+                </button>
+                <span style={{ fontSize: "0.72rem", color: "var(--muted)", fontFamily: "var(--font-barlow-condensed), sans-serif", fontWeight: 600, letterSpacing: "0.07em" }}>
+                  {demoStep + 1} / {HOW_STEPS.length}
+                </span>
+                {demoStep < HOW_STEPS.length - 1 ? (
+                  <button className="lp-btn-primary" onClick={() => setDemoStep(i => i + 1)}>
+                    Next →
+                  </button>
+                ) : (
+                  <a href="/pool/create" className="lp-btn-primary" style={{ textDecoration: "none" }}>
+                    Create a Sweepstake →
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 
