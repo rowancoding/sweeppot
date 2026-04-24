@@ -29,12 +29,12 @@ const SECTIONS = [
   {
     n: 6,
     title: "Entry Fees and Payments",
-    body: "Entry fees are denominated in AUD or GBP. Payments are processed securely via Stripe. Entry fees are held in escrow until the tournament concludes. Free pools (£0 / $0 entry) are supported — no money changes hands in free pools.",
+    body: "Entry fees are denominated in AUD or GBP. Payments are processed securely via Stripe. Entry fees are held in escrow until the tournament concludes. Free pools (£0 / $0 entry) are supported — no money changes hands in free pools. Entry fees are authorised at the time of joining and held until the pool fills or the entry deadline is met. Cards are not charged until that point.",
   },
   {
     n: 7,
     title: "Platform Fee",
-    body: "Sweeppot charges a 10% service fee on all paid pools. This fee covers payment processing and platform costs, and is deducted from the prize pot before payout. Free pools are not subject to any fee.",
+    body: "Sweeppot charges a 10% service fee on all paid pools. The 10% service fee is deducted from the prize pot before payout. Stripe payment processing fees (2.9% + A$0.30 or £0.30) are added to each participant's entry fee at the time of payment and are non-refundable. Free pools are not subject to any fee.",
   },
   {
     n: 8,
@@ -65,6 +65,16 @@ const SECTIONS = [
     n: 13,
     title: "Contact",
     body: "For questions about these terms, contact us at legal@sweeppot.com.",
+  },
+  {
+    n: 14,
+    title: "Fairness & Randomness",
+    body: "Sweeppot does not set odds. Every participant has an equal and fair chance of receiving any team. Team assignment is performed using cryptographically secure randomness on our servers — the outcome cannot be predicted, influenced, or repeated. Draw results are final and visible to all participants.",
+  },
+  {
+    n: 15,
+    title: "Platform Role",
+    body: "Sweeppot is a platform provider, not a gambling operator. Sweeppot does not participate in pools, does not take a position on outcomes, and does not benefit from any particular result. The platform facilitates peer-to-peer sweepstakes between private groups of known individuals.",
   },
 ];
 
