@@ -3,17 +3,14 @@
 import { useState, useRef, useEffect, useLayoutEffect, KeyboardEvent } from "react";
 import Link from "next/link";
 
-type PresetKey = "Champions League" | "Premier League" | "Euros 2028";
+type PresetKey = "UCL Semi-Finals 2026" | "Premier League" | "Euros 2028";
 type Phase = "form" | "spinning" | "done";
 
 // Hardcoded fallback team lists — updated by API on mount where available
 const HARDCODED_PRESETS: Record<PresetKey, string[]> = {
-  // CL 2025/26 Round of 16 — API will attempt to replace with live data
-  "Champions League": [
-    "Arsenal", "Atletico Madrid", "Barcelona", "Bayern Munich",
-    "Aston Villa", "Borussia Dortmund", "Club Brugge", "Inter Milan",
-    "Juventus", "Lille", "Liverpool", "Manchester City",
-    "Monaco", "PSG", "Real Madrid", "Feyenoord",
+  // UCL 2025/26 semi-finalists
+  "UCL Semi-Finals 2026": [
+    "PSG", "Bayern Munich", "Atletico Madrid", "Arsenal",
   ],
   // Premier League 2024/25 — API will attempt to replace with live data
   "Premier League": [
@@ -106,9 +103,9 @@ export default function FootballGeneratorPage() {
   const [presetsData, setPresetsData] = useState<Record<PresetKey, string[]>>(
     () => ({ ...HARDCODED_PRESETS })
   );
-  const [activePreset, setActivePreset] = useState<PresetKey>("Champions League");
+  const [activePreset, setActivePreset] = useState<PresetKey>("UCL Semi-Finals 2026");
   const [participants, setParticipants] = useState<string[]>(["", ""]);
-  const [teams, setTeams]               = useState<string[]>([...HARDCODED_PRESETS["Champions League"]]);
+  const [teams, setTeams]               = useState<string[]>([...HARDCODED_PRESETS["UCL Semi-Finals 2026"]]);
   const [newParticipant, setNewParticipant] = useState("");
   const [newTeam, setNewTeam]               = useState("");
 
@@ -143,7 +140,6 @@ export default function FootballGeneratorPage() {
         }
       } catch { /* silent — hardcoded fallback remains */ }
     };
-    fetchTeams("CL", "Champions League");
     fetchTeams("PL", "Premier League");
   }, []);
 
