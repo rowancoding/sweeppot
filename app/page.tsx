@@ -754,9 +754,9 @@ export default function SweeppotApp() {
       {/* ── App tab bar (hidden on landing) ── */}
       {screen !== "landing" && (
         <div className="app-tab-bar">
-          <button className={`atb-tab${screen === "home" ? " active" : ""}`} onClick={() => { setScreen("home"); setTab("myPools"); }}>Home</button>
+          <button className="atb-tab" onClick={() => { setScreen("home"); setTab("myPools"); }}>Home</button>
           <button className={`atb-tab${screen === "home" && tab === "myPools" ? " active" : ""}`} onClick={() => { setScreen("home"); setTab("myPools"); }}>My Pools</button>
-          <button className="atb-tab" onClick={() => { setScreen("home"); setTab("browse"); }}>
+          <button className={`atb-tab${screen === "home" && tab === "browse" ? " active" : ""}`} onClick={() => { setScreen("home"); setTab("browse"); }}>
             Invited Pools <span className="inv-badge-dot">2</span>
           </button>
           <button className="atb-tab" onClick={showInviteDemo}>Try Demo</button>
