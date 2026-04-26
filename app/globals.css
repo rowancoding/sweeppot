@@ -725,3 +725,13 @@ body.light-mode .gen-draw-btn { color: #fff; }
 .gen-spin-sofar-row { display: flex; align-items: center; gap: 0.55rem; padding: 0.2rem 0; font-size: 0.8rem; }
 .gen-spin-sofar-name { color: var(--muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gen-spin-sofar-team { color: var(--text); font-weight: 600; flex: 1; text-align: right; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gen-faq { margin: 3rem 0 2rem; border-top: 1px solid var(--border); padding-top: 2.5rem; }
+.gen-faq-title { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.6rem; color: var(--text); letter-spacing: 0.04em; margin-bottom: 1.25rem; }
+.gen-faq-item { border: 1px solid var(--border); background: var(--dark3); margin-bottom: 0.6rem; }
+.gen-faq-item[open] { border-color: var(--green); }
+.gen-faq-q { font-size: 0.88rem; font-weight: 600; color: var(--text); padding: 1rem 1.1rem; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.gen-faq-q::-webkit-details-marker { display: none; }
+.gen-faq-q::after { content: "+"; font-size: 1.1rem; color: var(--green); flex-shrink: 0; margin-left: 1rem; }
+.gen-faq-item[open] .gen-faq-q::after { content: "−"; }
+.gen-faq-a { padding: 0 1.1rem 1rem; }
+.gen-faq-a p { font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin: 0; }

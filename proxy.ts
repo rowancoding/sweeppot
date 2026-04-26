@@ -51,6 +51,7 @@ export async function proxy(request: NextRequest) {
   const isPublicRoute =
     pathname === "/" ||
     pathname === "/generator" ||
+    pathname === "/world-cup-sweepstake-generator" ||
     pathname === "/terms" ||
     pathname === "/blocked" ||
     pathname.startsWith("/join/") ||
