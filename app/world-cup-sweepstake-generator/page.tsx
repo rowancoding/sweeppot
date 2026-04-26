@@ -551,25 +551,25 @@ export default function WorldCupGeneratorPage() {
         {phase === "spinning" && (
           <div className="gen-spin-stage">
             {!landed && (
-              <button
-                className={`spin-btn${isSpinning ? " spinning" : ""}`}
-                onClick={doSpin}
-                disabled={isSpinning}
-              >
-                {isSpinning ? "SPINNING…" : "SPIN"}
-              </button>
-            )}
-
-            {!landed && !isSpinning && (
               <>
-                <div className="result-placeholder">
-                  Spin to reveal {currentName}&apos;s
-                  {currentPersonTotal > 1 ? ` team ${spinWithin + 1}` : " team"}
-                </div>
+                <button
+                  className={`spin-btn${isSpinning ? " spinning" : ""}`}
+                  onClick={doSpin}
+                  disabled={isSpinning}
+                >
+                  {isSpinning ? "SPINNING…" : "SPIN"}
+                </button>
                 <button className="gen-reveal-btn" onClick={revealAll}>
                   Reveal All
                 </button>
               </>
+            )}
+
+            {!landed && !isSpinning && (
+              <div className="result-placeholder">
+                Spin to reveal {currentName}&apos;s
+                {currentPersonTotal > 1 ? ` team ${spinWithin + 1}` : " team"}
+              </div>
             )}
 
             {landed && (
@@ -580,6 +580,9 @@ export default function WorldCupGeneratorPage() {
                 </div>
                 <button className="dismiss-btn" onClick={advance}>
                   {advanceBtnLabel}
+                </button>
+                <button className="gen-reveal-btn" onClick={revealAll}>
+                  Reveal All
                 </button>
               </div>
             )}
