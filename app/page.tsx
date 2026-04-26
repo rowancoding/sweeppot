@@ -248,19 +248,8 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
   }
 
   function showRound(idx: number) {
+    if (idx >= bracket.length) return;
     const statusEl = document.getElementById("bracketAnimStatus");
-    if (idx >= bracket.length) {
-      if (statusEl) statusEl.innerHTML = "";
-      const endDiv = document.createElement("div");
-      endDiv.style.cssText = "text-align:center;padding:1rem 0;";
-      const endBtn = document.createElement("button");
-      endBtn.textContent = "Next →";
-      endBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.6rem 1.5rem;font-weight:700;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;";
-      endBtn.onclick = () => { overlay.remove(); showDemoPaymentInterstitial(prize, myTeam.team); };
-      endDiv.appendChild(endBtn);
-      if (statusEl) statusEl.appendChild(endDiv);
-      return;
-    }
     const rd = bracket[idx];
     const isFinal = idx === 3;
     if (statusEl) {
@@ -284,7 +273,8 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
         + rd.round + '<span style="font-weight:400;font-size:0.58rem;opacity:0.7;margin-left:0.6rem;">' + rd.date + "</span></div>"
       + '<div id="matchGrid_' + idx + '" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.5rem;"></div>';
     content.appendChild(roundEl);
-    setTimeout(() => roundEl.scrollIntoView({ behavior: "smooth", block: "start" }), 200);
+    // Center the new round in the viewport so it isn't pushed to the edge
+    setTimeout(() => roundEl.scrollIntoView({ behavior: "smooth", block: "center" }), 200);
     const matchGrid = document.getElementById("matchGrid_" + idx);
     if (!matchGrid) return;
     rd.matches.forEach((m, mi) => {
@@ -301,6 +291,7 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
         if (mi === rd.matches.length - 1) {
           setTimeout(() => {
             if (isFinal) {
+              // Show prize pot then pause for user — only "Next →" in the entire bracket flow
               const prizePotEl = document.createElement("div");
               prizePotEl.style.cssText = "text-align:center;margin-top:1rem;padding:0.75rem;background:rgba(198,241,53,0.06);border:1px solid rgba(198,241,53,0.25);";
               prizePotEl.innerHTML =
@@ -308,15 +299,20 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
                 + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:2rem;color:var(--green);">$' + prize + " AUD</div>"
                 + '<div style="font-size:0.65rem;color:var(--dim);">Winner takes all — paid automatically and securely via Stripe</div>';
               roundEl.appendChild(prizePotEl);
+              // Scroll prize pot to center, clear of any bottom UI
+              setTimeout(() => prizePotEl.scrollIntoView({ behavior: "smooth", block: "center" }), 200);
+              const nextDiv = document.createElement("div");
+              nextDiv.style.cssText = "text-align:center;padding:1rem 0;";
+              const nextBtn = document.createElement("button");
+              nextBtn.textContent = "Next →";
+              nextBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.6rem 1.5rem;font-weight:700;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;";
+              nextBtn.onclick = () => { overlay.remove(); showDemoPaymentInterstitial(prize, myTeam.team); };
+              nextDiv.appendChild(nextBtn);
+              roundEl.appendChild(nextDiv);
+            } else {
+              // Auto-advance to the next round — no user input required between rounds
+              setTimeout(() => showRound(idx + 1), 1500);
             }
-            const nextDiv = document.createElement("div");
-            nextDiv.style.cssText = "text-align:center;padding:1rem 0;";
-            const nextBtn = document.createElement("button");
-            nextBtn.textContent = "Next →";
-            nextBtn.style.cssText = "background:var(--green);color:var(--dark);border:none;padding:0.6rem 1.5rem;font-weight:700;font-size:0.85rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;";
-            nextBtn.onclick = () => { nextDiv.remove(); showRound(idx + 1); };
-            nextDiv.appendChild(nextBtn);
-            roundEl.appendChild(nextDiv);
           }, 500);
         }
       }, mi * 1500);
