@@ -185,14 +185,15 @@ export default async function JoinPage({
         )}
       </div>
 
-      <button
+      {/* Light mode toggle hidden — dark theme only for now, re-enable if needed */}
+      {/* <button
         className="mode-toggle"
         onClick={() => (document as Document & { body: HTMLBodyElement }).body.classList.toggle("light-mode")}
         title="Switch mode"
         suppressHydrationWarning
       >
         ☀️
-      </button>
+      </button> */}
     </div>
   );
 }

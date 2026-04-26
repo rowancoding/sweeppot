@@ -145,13 +145,14 @@ export default function CreatePool() {
           ← My Pools
         </Link>
         <span className="create-nav-logo">Sweeppot</span>
-        <button
+        {/* Light mode toggle hidden — dark theme only for now, re-enable if needed */}
+        {/* <button
           className="mode-toggle"
           onClick={() => document.body.classList.toggle("light-mode")}
           title="Switch mode"
         >
           ☀️
-        </button>
+        </button> */}
       </nav>
 
       <div className="create-body">

@@ -687,13 +687,14 @@ export default function GeneratorPage() {
         </footer>
       </div>
 
-      <button
+      {/* Light mode toggle hidden — dark theme only for now, re-enable if needed */}
+      {/* <button
         className="mode-toggle"
         onClick={() => document.body.classList.toggle("light-mode")}
         title="Switch mode"
       >
         ☀️
-      </button>
+      </button> */}
 
       {/* Fixed bottom banner — visible only while filling in the form */}
       {phase === "form" && (

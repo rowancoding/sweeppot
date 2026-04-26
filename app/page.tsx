@@ -1137,10 +1137,10 @@ export default function SweeppotApp() {
       {/* Confetti container */}
       <div className="confetti-el" id="confettiEl" />
 
-      {/* Mode toggle */}
-      <button className="mode-toggle" onClick={() => setLightMode(v => !v)} title="Switch mode">
+      {/* Light mode toggle hidden — dark theme only for now, re-enable if needed */}
+      {/* <button className="mode-toggle" onClick={() => setLightMode(v => !v)} title="Switch mode">
         {lightMode ? "🌙" : "☀️"}
-      </button>
+      </button> */}
     </>
   );
 }

@@ -70,13 +70,14 @@ export default function UpdatePaymentForm({ poolId, poolName, betAud }: Props) {
         </form>
       </div>
 
-      <button
+      {/* Light mode toggle hidden — dark theme only for now, re-enable if needed */}
+      {/* <button
         className="mode-toggle"
         onClick={() => document.body.classList.toggle("light-mode")}
         title="Switch mode"
       >
         ☀️
-      </button>
+      </button> */}
     </div>
   );
 }
