@@ -798,7 +798,7 @@ export default function SweeppotApp() {
                   <div className="lp-mock-reveal">
                     <div className="lp-mock-reveal-title">🎉 The Draw Has Happened!</div>
                     <div className="lp-mock-team">🇧🇷 Brazil <span className="lp-tier-pill">Tier 1</span></div>
-                    <div className="lp-mock-team">🇺🇸 USA <span className="lp-tier-pill">Tier 2</span></div>
+                    <div className="lp-mock-team">🇦🇺 Australia <span className="lp-tier-pill">Tier 2</span></div>
                     <div className="lp-mock-yours">⭐ Your teams</div>
                   </div>
                   <div className="lp-mock-payout">Your payout: <strong>$144.00</strong></div>
