@@ -52,10 +52,12 @@ export async function proxy(request: NextRequest) {
     pathname === "/" ||
     pathname === "/generator" ||
     pathname === "/world-cup-sweepstake-generator" ||
+    pathname === "/football-sweepstake-generator" ||
     pathname === "/terms" ||
     pathname === "/blocked" ||
     pathname.startsWith("/join/") ||
     pathname.startsWith("/api/stripe/") ||
+    pathname.startsWith("/api/football-data") ||
     pathname.startsWith("/auth/confirm");
 
   // Unauthenticated: redirect to /auth/login (except on auth/public routes)
