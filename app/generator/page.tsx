@@ -11,13 +11,13 @@ const PRESETS: Record<PresetKey, string[]> = {
   "Premier League": [
     "Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton",
     "Chelsea", "Crystal Palace", "Everton", "Fulham", "Ipswich",
-    "Leicester", "Liverpool", "Man City", "Man United", "Newcastle",
-    "Nottm Forest", "Southampton", "Spurs", "West Ham", "Wolves",
+    "Leicester", "Liverpool", "Manchester City", "Manchester United", "Newcastle",
+    "Nottm Forest", "Southampton", "Tottenham", "West Ham", "Wolves",
   ],
   "Champions League": [
     "Arsenal", "Atletico Madrid", "Barcelona", "Bayern Munich", "Benfica",
     "Borussia Dortmund", "Celtic", "Club Brugge", "Feyenoord", "Inter Milan",
-    "Juventus", "Lille", "Liverpool", "Man City", "Monaco", "Real Madrid",
+    "Juventus", "Lille", "Liverpool", "Manchester City", "Monaco", "Real Madrid",
   ],
   "World Cup 2026": [
     "Argentina", "Australia", "Belgium", "Brazil", "Canada",
