@@ -95,7 +95,7 @@ export default async function JoinPage({
         {/* Pool summary */}
         <div className="ipc">
           <div className="ipc-comp">
-            {meta.icon} {meta.label} · {pool.visibility === "private" ? "🔒 Private Pool" : "🌐 Public Pool"}
+            {meta.icon} {meta.label} · {pool.visibility === "private" ? "🛡️ Private Pool" : "🌐 Public Pool"}
           </div>
           <h1 className="ipc-name">{pool.name}</h1>
           <div className="ipc-stats">

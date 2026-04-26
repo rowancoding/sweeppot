@@ -422,7 +422,7 @@ export default function CreatePool() {
                         onChange={() => setVisibility("private")}
                       />
                       <label className="radio-lbl" htmlFor="v-priv">
-                        <span className="radio-title">🔒 Private</span>
+                        <span className="radio-title">🛡️ Private</span>
                         <span className="radio-desc">Invite-only via link</span>
                       </label>
                     </div>
@@ -450,7 +450,7 @@ export default function CreatePool() {
                   <div className="dl-box">
                     <div className="dl-title">⏱ How the deadline works</div>
                     <div className="dl-rule">
-                      <span>🔒</span>
+                      <span>🛡️</span>
                       <div>
                         Pool <strong>always closes 1 hour before the first game</strong>. Late
                         payments auto-refunded.
@@ -624,7 +624,7 @@ export default function CreatePool() {
                   )}
                   <div className="rev-item">
                     <div className="rev-key">Visibility</div>
-                    <div className="rev-val">{visibility === "private" ? "🔒 Private" : "🌐 Public"}</div>
+                    <div className="rev-val">{visibility === "private" ? "🛡️ Private" : "🌐 Public"}</div>
                   </div>
                   <div className="rev-item">
                     <div className="rev-key">Draw Mode</div>

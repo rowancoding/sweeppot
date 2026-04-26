@@ -788,7 +788,7 @@ export default function SweeppotApp() {
                   <div className="lp-stat-div" />
                   <div className="lp-stat"><div className="lp-stat-n">10%</div><div className="lp-stat-l">Service fee — every entry goes into the pot</div></div>
                 </div>
-                <div className="lp-stripe-badge">🔒 Payments secured by <strong>Stripe</strong> — entry fees held in escrow until the tournament ends</div>
+                <div className="lp-stripe-badge">🛡️ Payments secured by <strong>Stripe</strong> — entry fees held in escrow until the tournament ends</div>
               </div>
               <div className="lp-hero-right">
                 <div className="lp-mock-card">

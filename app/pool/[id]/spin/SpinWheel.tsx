@@ -262,7 +262,7 @@ export default function SpinWheel({
                     <div className="result-warn">Your team has been locked in. See everyone&apos;s teams on the pool page.</div>
                   )}
                   <button className="dismiss-btn" onClick={onDismiss} disabled={isDone}>
-                    {isDone ? "Saving…" : curTier < teamsPerPlayer ? `Got it — spin Tier ${curTier + 1} →` : "Got it — view pool results 🔒"}
+                    {isDone ? "Saving…" : curTier < teamsPerPlayer ? `Got it — spin Tier ${curTier + 1} →` : "Got it — view pool results 🛡️"}
                   </button>
                 </div>
               )}

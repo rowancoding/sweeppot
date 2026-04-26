@@ -316,7 +316,7 @@ export default async function PoolPage({
                         ))
                     ) : (
                       <div className="rc-hidden">
-                        🔒 <span>Waiting to spin</span>
+                        🛡️ <span>Waiting to spin</span>
                       </div>
                     )}
                   </div>
