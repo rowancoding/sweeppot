@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, KeyboardEvent } from "react";
 import Link from "next/link";
 
 type PresetKey = "Premier League" | "Champions League" | "World Cup 2026";
@@ -51,6 +51,9 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+// useLayoutEffect on the client (synchronous after DOM commit), useEffect on server (SSR safe)
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export default function GeneratorPage() {
   // ── Form state ────────────────────────────────────────────────
   const [participants, setParticipants] = useState<string[]>(["", ""]);
@@ -60,15 +63,16 @@ export default function GeneratorPage() {
   const [newTeam, setNewTeam]               = useState("");
 
   // ── Spin state ────────────────────────────────────────────────
-  const [phase, setPhase]           = useState<Phase>("form");
+  const [phase, setPhase]             = useState<Phase>("form");
   const [assignments, setAssignments] = useState<DrawResult[]>([]);
-  const [spinIdx, setSpinIdx]       = useState(0);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [landed, setLanded]         = useState<DrawResult | null>(null);
+  const [spinIdx, setSpinIdx]         = useState(0);
+  const [isSpinning, setIsSpinning]   = useState(false);
+  const [landed, setLanded]           = useState<DrawResult | null>(null);
   const [doneResults, setDoneResults] = useState<DrawResult[]>([]);
 
   const pInputRef = useRef<HTMLInputElement>(null);
   const tInputRef = useRef<HTMLInputElement>(null);
+  // Canvas ref — element is always in the DOM so the ref is never null when effects run
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const angleRef  = useRef(0);
 
@@ -86,10 +90,10 @@ export default function GeneratorPage() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const light   = typeof document !== "undefined" && document.body.classList.contains("light-mode");
-    const colors  = light ? WHEEL_LIGHT : WHEEL_DARK;
-    const textCol = light ? "#333" : "rgba(236,239,241,0.82)";
-    const rimCol  = light ? "rgba(27,94,32,0.45)" : "rgba(198,241,53,0.45)";
+    const light    = typeof document !== "undefined" && document.body.classList.contains("light-mode");
+    const colors   = light ? WHEEL_LIGHT : WHEEL_DARK;
+    const textCol  = light ? "#333" : "rgba(236,239,241,0.82)";
+    const rimCol   = light ? "rgba(27,94,32,0.45)" : "rgba(198,241,53,0.45)";
     const centerBg = light ? "#fff" : "#1E2936";
 
     const cx = canvas.width / 2, cy = canvas.height / 2, r = cx - 6;
@@ -136,8 +140,10 @@ export default function GeneratorPage() {
     ctx.strokeStyle = rimCol; ctx.lineWidth = 2; ctx.stroke();
   }
 
-  // Redraw with the remaining teams whenever we advance to a new participant
-  useEffect(() => {
+  // Redraw with remaining teams when advancing to a new participant.
+  // useLayoutEffect fires synchronously after the DOM commit so the canvas is
+  // guaranteed to be painted before the browser shows the frame.
+  useIsomorphicLayoutEffect(() => {
     if (phase !== "spinning" || !assignments.length) return;
     angleRef.current = 0;
     const remaining = assignments.slice(spinIdx).map((a) => a.team);
@@ -197,7 +203,7 @@ export default function GeneratorPage() {
 
   // ── Draw flow ─────────────────────────────────────────────────
 
-  // Pre-compute all assignments and enter the spin phase
+  // Pre-compute all assignments then enter the spin phase
   function runDraw() {
     if (!canDraw) return;
     const shuffledTeams = shuffle(validTeams);
@@ -219,6 +225,7 @@ export default function GeneratorPage() {
     const remaining  = assignments.slice(spinIdx).map((a) => a.team);
     const targetTeam = assignments[spinIdx].team;
     const wi         = remaining.indexOf(targetTeam);
+    const result     = assignments[spinIdx];
 
     const seg = (2 * Math.PI) / remaining.length;
     const rot = (5 + Math.random() * 3) * 2 * Math.PI;
@@ -226,7 +233,6 @@ export default function GeneratorPage() {
     const dur = 2500 + Math.random() * 1000;
     const t0  = performance.now();
     const a0  = angleRef.current;
-    const result = assignments[spinIdx];
 
     function ease(t: number) { return 1 - Math.pow(1 - t, 4); }
 
@@ -249,7 +255,7 @@ export default function GeneratorPage() {
     requestAnimationFrame(anim);
   }
 
-  // Advance to the next participant after their result is shown
+  // Advance to the next participant after their result is confirmed
   function advance() {
     if (!landed) return;
     const newDone = [...doneResults, landed];
@@ -463,9 +469,9 @@ export default function GeneratorPage() {
           </>
         )}
 
-        {/* ── Spin phase ── */}
+        {/* ── Spinning phase — top (above wheel) ── */}
         {phase === "spinning" && (
-          <div className="gen-spin-stage">
+          <div className="gen-spin-top">
             <div className="gen-spin-header">
               <div className="gen-spin-progress">
                 Spin {spinIdx + 1} of {assignments.length}
@@ -478,26 +484,38 @@ export default function GeneratorPage() {
                 ← Start Over
               </button>
             </div>
-
             <div className="player-row" style={{ maxWidth: 340, width: "100%" }}>
               <span className="player-lbl">Spinning for:</span>
               <div className="player-name-disp">{assignments[spinIdx]?.participant}</div>
             </div>
+          </div>
+        )}
 
-            <div className="wheel-wrap" style={{ margin: "0 auto" }}>
-              <div className="wheel-ptr" />
-              <canvas
-                ref={canvasRef}
-                width={300}
-                height={300}
-                style={{
-                  borderRadius: "50%",
-                  boxShadow: "0 0 0 3px rgba(198,241,53,0.15), 0 20px 40px rgba(0,0,0,0.3)",
-                }}
-              />
-              <div className="wheel-center" style={{ fontSize: "0.85rem", lineHeight: 1 }}>✦</div>
-            </div>
+        {/*
+          Canvas is ALWAYS in the DOM — never conditionally unmounted.
+          This guarantees canvasRef.current is non-null when the layout effect fires.
+          Visibility is controlled purely via CSS display.
+        */}
+        <div
+          className="wheel-wrap"
+          style={{ margin: "0 auto", display: phase === "spinning" ? undefined : "none" }}
+        >
+          <div className="wheel-ptr" />
+          <canvas
+            ref={canvasRef}
+            width={300}
+            height={300}
+            style={{
+              borderRadius: "50%",
+              boxShadow: "0 0 0 3px rgba(198,241,53,0.15), 0 20px 40px rgba(0,0,0,0.3)",
+            }}
+          />
+          <div className="wheel-center" style={{ fontSize: "0.85rem", lineHeight: 1 }}>✦</div>
+        </div>
 
+        {/* ── Spinning phase — bottom (below wheel) ── */}
+        {phase === "spinning" && (
+          <div className="gen-spin-stage">
             {!landed && (
               <button
                 className={`spin-btn${isSpinning ? " spinning" : ""}`}

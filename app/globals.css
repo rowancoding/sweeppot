@@ -708,7 +708,8 @@ body.light-mode .gen-draw-btn { color: #fff; }
 .gen-bottom-text { font-size: 0.8rem; color: var(--muted); }
 .gen-bottom-link { font-family: var(--font-barlow-condensed), sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); text-decoration: none; white-space: nowrap; }
 .gen-bottom-link:hover { text-decoration: underline; }
-.gen-spin-stage { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; padding: 1.5rem 0 2.5rem; }
+.gen-spin-top { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; width: 100%; padding: 1.5rem 0 1rem; }
+.gen-spin-stage { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; padding: 1rem 0 2.5rem; }
 .gen-spin-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 .gen-spin-progress { font-family: var(--font-barlow-condensed), sans-serif; font-size: 0.75rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; }
 .gen-spin-sofar { width: 100%; max-width: 380px; border: 1px solid var(--border); background: var(--dark3); padding: 0.85rem 1.1rem; }
