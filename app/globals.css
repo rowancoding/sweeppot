@@ -647,7 +647,7 @@ input[type="range"]::-webkit-slider-thumb { appearance: none; width: 17px; heigh
 @keyframes spin360 { to { transform: rotate(360deg); } }
 
 /* ── GENERATOR ── */
-.gen-wrap { width: 100%; max-width: 900px; padding: 2.5rem 1.5rem 0; }
+.gen-wrap { width: 100%; max-width: 900px; padding: 2.5rem 1.5rem 4rem; }
 .gen-hdr { margin-bottom: 2rem; }
 .gen-h1 { font-family: var(--font-bebas-neue), sans-serif; font-size: 2.4rem; color: var(--text); letter-spacing: 0.04em; margin-bottom: 0.4rem; }
 .gen-sub { font-size: 0.85rem; color: var(--muted); line-height: 1.6; max-width: 560px; }
@@ -701,3 +701,10 @@ body.light-mode .gen-draw-btn { color: #fff; }
 .gen-cta { background: var(--dark2); border: 1px solid var(--border); padding: 2.5rem 2rem; text-align: center; margin-bottom: 2rem; }
 .gen-cta-title { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.9rem; color: var(--text); letter-spacing: 0.04em; margin-bottom: 0.4rem; }
 .gen-cta-sub { font-size: 0.83rem; color: var(--muted); margin-bottom: 1.3rem; line-height: 1.6; }
+.gen-convert { background: var(--dark2); border: 1px solid var(--green); padding: 2.5rem 2rem; text-align: center; margin-bottom: 2rem; }
+.gen-convert-title { font-family: var(--font-bebas-neue), sans-serif; font-size: 1.9rem; color: var(--text); letter-spacing: 0.04em; margin-bottom: 0.6rem; }
+.gen-convert-body { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.4rem; line-height: 1.65; max-width: 38rem; margin-left: auto; margin-right: auto; }
+.gen-bottom-banner { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: var(--dark2); border-top: 1px solid var(--border); padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.gen-bottom-text { font-size: 0.8rem; color: var(--muted); }
+.gen-bottom-link { font-family: var(--font-barlow-condensed), sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); text-decoration: none; white-space: nowrap; }
+.gen-bottom-link:hover { text-decoration: underline; }

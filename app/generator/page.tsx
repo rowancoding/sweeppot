@@ -3,7 +3,7 @@
 import { useState, useRef, KeyboardEvent } from "react";
 import Link from "next/link";
 
-type PresetKey = "Premier League" | "Champions League" | "World Cup 2026" | "Melbourne Cup";
+type PresetKey = "Premier League" | "Champions League" | "World Cup 2026";
 
 // Preset team lists for common competitions
 const PRESETS: Record<PresetKey, string[]> = {
@@ -26,13 +26,6 @@ const PRESETS: Record<PresetKey, string[]> = {
     "Portugal", "Saudi Arabia", "Senegal", "Serbia", "South Korea",
     "Spain", "Switzerland", "USA", "Uruguay", "Wales",
     "Cameroon", "Egypt",
-  ],
-  "Melbourne Cup": [
-    "Without a Fight", "Vauban", "Gold Trip", "Incentivise", "Twilight Payment",
-    "Vow And Declare", "Cross Counter", "Rekindling", "Almandin", "Protectionist",
-    "Makybe Diva", "Efficient", "Shocking", "Delta Blues", "Saintly",
-    "Media Puzzle", "Ethereal", "Kingston Rule", "Galilee", "Rain Lover",
-    "Think Big", "Light Fingers", "Prince of Penzance", "Green Moon",
   ],
 };
 
@@ -153,7 +146,7 @@ export default function GeneratorPage() {
           <Link href="/" className="nav-btn" style={{ textDecoration: "none" }}>
             ← Home
           </Link>
-          <Link href="/pool/create" className="nav-btn hi" style={{ textDecoration: "none" }}>
+          <Link href="/auth/signup" className="nav-btn hi" style={{ textDecoration: "none" }}>
             + Create Pool
           </Link>
         </div>
@@ -352,16 +345,19 @@ export default function GeneratorPage() {
           </section>
         )}
 
-        {/* CTA */}
-        <div className="gen-cta">
-          <div className="gen-cta-title">Want to make it official?</div>
-          <p className="gen-cta-sub">
-            Sweeppot handles payments, draws, and payouts automatically.
-          </p>
-          <Link href="/pool/create" className="lp-btn-primary" style={{ textDecoration: "none" }}>
-            Create a Pool →
-          </Link>
-        </div>
+        {/* Conversion panel — shown after draw results */}
+        {results && (
+          <div className="gen-convert">
+            <div className="gen-convert-title">Want to make this official?</div>
+            <p className="gen-convert-body">
+              Sweeppot handles payments, holds entry fees securely, and pays the winner automatically.
+              No spreadsheets, no chasing people up.
+            </p>
+            <Link href="/auth/signup" className="lp-btn-primary" style={{ textDecoration: "none" }}>
+              Create a Free Pool →
+            </Link>
+          </div>
+        )}
 
         <footer className="lp-footer">
           <div className="lp-footer-logo">Sweeppot</div>
@@ -379,6 +375,16 @@ export default function GeneratorPage() {
       >
         ☀️
       </button>
+
+      {/* Fixed bottom banner — visible while tool is in use, hidden once results are shown */}
+      {!results && (
+        <div className="gen-bottom-banner">
+          <span className="gen-bottom-text">Running a paid sweep? Make it official with Sweeppot</span>
+          <Link href="/auth/signup" className="gen-bottom-link">
+            Get started →
+          </Link>
+        </div>
+      )}
     </>
   );
 }
