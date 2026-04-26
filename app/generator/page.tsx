@@ -287,6 +287,15 @@ export default function GeneratorPage() {
     }
   }
 
+  // Skip remaining spins and jump straight to the results screen
+  function revealAll() {
+    setDoneResults(assignments);
+    setPhase("done");
+    setTimeout(() => {
+      document.getElementById("gen-results")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  }
+
   // Reset all state back to the empty form
   function reset() {
     setPhase("form");
@@ -568,10 +577,15 @@ export default function GeneratorPage() {
             )}
 
             {!landed && !isSpinning && (
-              <div className="result-placeholder">
-                Spin to reveal {currentName}&apos;s
-                {currentPersonTotal > 1 ? ` team ${spinWithin + 1}` : " team"}
-              </div>
+              <>
+                <div className="result-placeholder">
+                  Spin to reveal {currentName}&apos;s
+                  {currentPersonTotal > 1 ? ` team ${spinWithin + 1}` : " team"}
+                </div>
+                <button className="gen-reveal-btn" onClick={revealAll}>
+                  Reveal All
+                </button>
+              </>
             )}
 
             {landed && (
