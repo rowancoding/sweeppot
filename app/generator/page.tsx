@@ -51,14 +51,25 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-// useLayoutEffect on the client (synchronous after DOM commit), useEffect on server (SSR safe)
+// useLayoutEffect on client (synchronous after DOM commit), useEffect on server (SSR safe)
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+// Group a flat DrawResult array into an ordered Map of participant → teams[]
+function groupByParticipant(results: DrawResult[]): Map<string, string[]> {
+  const map = new Map<string, string[]>();
+  for (const r of results) {
+    if (!map.has(r.participant)) map.set(r.participant, []);
+    map.get(r.participant)!.push(r.team);
+  }
+  return map;
+}
 
 export default function GeneratorPage() {
   // ── Form state ────────────────────────────────────────────────
-  const [participants, setParticipants] = useState<string[]>(["", ""]);
-  const [teams, setTeams]               = useState<string[]>(["", ""]);
-  const [activePreset, setActivePreset] = useState<PresetKey | null>(null);
+  const [participants, setParticipants]     = useState<string[]>(["", ""]);
+  const [teams, setTeams]                   = useState<string[]>(["", ""]);
+  const [activePreset, setActivePreset]     = useState<PresetKey | null>(null);
+  const [teamsPerPerson, setTeamsPerPerson] = useState(1);
   const [newParticipant, setNewParticipant] = useState("");
   const [newTeam, setNewTeam]               = useState("");
 
@@ -72,14 +83,22 @@ export default function GeneratorPage() {
 
   const pInputRef = useRef<HTMLInputElement>(null);
   const tInputRef = useRef<HTMLInputElement>(null);
-  // Canvas ref — element is always in the DOM so the ref is never null when effects run
+  // Canvas ref — always in the DOM so the ref is never null when effects run
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const angleRef  = useRef(0);
 
   const validParticipants = participants.filter((p) => p.trim() !== "");
   const validTeams        = teams.filter((t) => t.trim() !== "");
-  const teamsShort = validParticipants.length >= 2 && validTeams.length > 0 && validTeams.length < validParticipants.length;
-  const canDraw    = validParticipants.length >= 2 && validTeams.length >= validParticipants.length;
+  const requiredTeams     = validParticipants.length * teamsPerPerson;
+  const maxTeamsPerPerson = Math.max(1, validParticipants.length > 0
+    ? Math.floor(validTeams.length / validParticipants.length)
+    : 10);
+
+  // Exact match required: every team must be assigned to exactly one slot
+  const teamsMismatch = validParticipants.length >= 2 && teamsPerPerson >= 1
+    && validTeams.length > 0 && validTeams.length !== requiredTeams;
+  const canDraw = validParticipants.length >= 2 && teamsPerPerson >= 1
+    && validTeams.length === requiredTeams;
 
   // ── Canvas wheel drawing ──────────────────────────────────────
 
@@ -140,9 +159,8 @@ export default function GeneratorPage() {
     ctx.strokeStyle = rimCol; ctx.lineWidth = 2; ctx.stroke();
   }
 
-  // Redraw with remaining teams when advancing to a new participant.
-  // useLayoutEffect fires synchronously after the DOM commit so the canvas is
-  // guaranteed to be painted before the browser shows the frame.
+  // Redraw with remaining teams on each spin advance.
+  // useLayoutEffect fires synchronously after DOM commit — canvas is always available.
   useIsomorphicLayoutEffect(() => {
     if (phase !== "spinning" || !assignments.length) return;
     angleRef.current = 0;
@@ -201,16 +219,25 @@ export default function GeneratorPage() {
     setActivePreset(null);
   }
 
+  // Clamp teams-per-person to a valid integer in [1, max]
+  function handleTeamsPerPersonChange(raw: string) {
+    const val = parseInt(raw, 10);
+    if (isNaN(val)) return;
+    setTeamsPerPerson(Math.max(1, val));
+  }
+
   // ── Draw flow ─────────────────────────────────────────────────
 
-  // Pre-compute all assignments then enter the spin phase
+  // Pre-compute all assignments (participants × teamsPerPerson spins) then enter spin phase
   function runDraw() {
     if (!canDraw) return;
-    const shuffledTeams = shuffle(validTeams);
-    const draw: DrawResult[] = validParticipants.map((name, i) => ({
-      participant: name,
-      team: shuffledTeams[i],
-    }));
+    const shuffled = shuffle(validTeams);
+    const draw: DrawResult[] = [];
+    validParticipants.forEach((name, pi) => {
+      for (let t = 0; t < teamsPerPerson; t++) {
+        draw.push({ participant: name, team: shuffled[pi * teamsPerPerson + t] });
+      }
+    });
     setAssignments(draw);
     setSpinIdx(0);
     setIsSpinning(false);
@@ -219,7 +246,7 @@ export default function GeneratorPage() {
     setPhase("spinning");
   }
 
-  // Animate the wheel landing on the current participant's pre-assigned team
+  // Animate the wheel landing on the current spin's pre-assigned team
   function doSpin() {
     if (isSpinning || !assignments[spinIdx]) return;
     const remaining  = assignments.slice(spinIdx).map((a) => a.team);
@@ -255,7 +282,7 @@ export default function GeneratorPage() {
     requestAnimationFrame(anim);
   }
 
-  // Advance to the next participant after their result is confirmed
+  // Advance to the next spin after the current result is confirmed
   function advance() {
     if (!landed) return;
     const newDone = [...doneResults, landed];
@@ -282,10 +309,25 @@ export default function GeneratorPage() {
     setParticipants(["", ""]);
     setTeams(["", ""]);
     setActivePreset(null);
+    setTeamsPerPerson(1);
     setNewParticipant("");
     setNewTeam("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
+  // ── Spinning phase derived values ─────────────────────────────
+  const spinWithin      = teamsPerPerson > 1 ? spinIdx % teamsPerPerson : 0;    // 0-indexed within participant
+  const currentName     = assignments[spinIdx]?.participant ?? "";
+  const nextAssignment  = assignments[spinIdx + 1];
+  const isLastSpin      = spinIdx + 1 >= assignments.length;
+  const nextIsSamePerson = !isLastSpin && nextAssignment?.participant === currentName;
+
+  // Label for the advance button
+  const advanceBtnLabel = isLastSpin
+    ? "See full results →"
+    : nextIsSamePerson
+      ? `Spin again for ${currentName} (team ${spinWithin + 2} of ${teamsPerPerson}) →`
+      : `Next → spin for ${nextAssignment?.participant}`;
 
   // ── Render ────────────────────────────────────────────────────
 
@@ -452,9 +494,31 @@ export default function GeneratorPage() {
               </section>
             </div>
 
-            {teamsShort && (
+            {/* Teams per person */}
+            <div className="gen-tpp-row">
+              <label className="gen-tpp-label" htmlFor="gen-tpp">
+                Teams per person
+              </label>
+              <input
+                id="gen-tpp"
+                className="gen-tpp-input fi"
+                type="number"
+                min={1}
+                max={maxTeamsPerPerson}
+                value={teamsPerPerson}
+                onChange={(e) => handleTeamsPerPersonChange(e.target.value)}
+              />
+              {validParticipants.length >= 2 && (
+                <span className="gen-tpp-hint">
+                  {requiredTeams} teams needed total
+                </span>
+              )}
+            </div>
+
+            {/* Validation */}
+            {teamsMismatch && (
               <div className="gen-warning" role="alert">
-                You need at least as many teams as participants — add more teams or remove participants.
+                Need exactly {requiredTeams} teams ({validParticipants.length} players × {teamsPerPerson} each) — you have {validTeams.length}.
               </div>
             )}
 
@@ -462,8 +526,8 @@ export default function GeneratorPage() {
               <button className="gen-draw-btn" onClick={runDraw} disabled={!canDraw}>
                 Generate Draw →
               </button>
-              {!canDraw && !teamsShort && (
-                <p className="gen-hint">Add at least 2 participants and 2 teams to continue.</p>
+              {!canDraw && !teamsMismatch && (
+                <p className="gen-hint">Add at least 2 participants and the right number of teams to continue.</p>
               )}
             </div>
           </>
@@ -486,14 +550,21 @@ export default function GeneratorPage() {
             </div>
             <div className="player-row" style={{ maxWidth: 340, width: "100%" }}>
               <span className="player-lbl">Spinning for:</span>
-              <div className="player-name-disp">{assignments[spinIdx]?.participant}</div>
+              <div className="player-name-disp">
+                {currentName}
+                {teamsPerPerson > 1 && (
+                  <span className="gen-spin-team-num">
+                    team {spinWithin + 1} of {teamsPerPerson}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         )}
 
         {/*
           Canvas is ALWAYS in the DOM — never conditionally unmounted.
-          This guarantees canvasRef.current is non-null when the layout effect fires.
+          canvasRef.current is therefore non-null when the layout effect fires.
           Visibility is controlled purely via CSS display.
         */}
         <div
@@ -528,7 +599,8 @@ export default function GeneratorPage() {
 
             {!landed && !isSpinning && (
               <div className="result-placeholder">
-                Spin to reveal {assignments[spinIdx]?.participant}&apos;s team
+                Spin to reveal {currentName}&apos;s
+                {teamsPerPerson > 1 ? ` team ${spinWithin + 1}` : " team"}
               </div>
             )}
 
@@ -539,21 +611,20 @@ export default function GeneratorPage() {
                   <div className="result-tname">{landed.team.toUpperCase()}</div>
                 </div>
                 <button className="dismiss-btn" onClick={advance}>
-                  {spinIdx + 1 < assignments.length
-                    ? `Next → spin for ${assignments[spinIdx + 1]?.participant}`
-                    : "See full results →"}
+                  {advanceBtnLabel}
                 </button>
               </div>
             )}
 
+            {/* Assigned so far — grouped by participant */}
             {doneResults.length > 0 && (
               <div className="gen-spin-sofar">
                 <div className="gen-spin-sofar-lbl">Assigned so far</div>
-                {doneResults.map((r, i) => (
-                  <div key={i} className="gen-spin-sofar-row">
-                    <span className="gen-spin-sofar-name">{r.participant}</span>
+                {Array.from(groupByParticipant(doneResults)).map(([name, assignedTeams]) => (
+                  <div key={name} className="gen-spin-sofar-row">
+                    <span className="gen-spin-sofar-name">{name}</span>
                     <span className="gen-result-arrow" aria-hidden="true">→</span>
-                    <span className="gen-spin-sofar-team">{r.team}</span>
+                    <span className="gen-spin-sofar-team">{assignedTeams.join(", ")}</span>
                   </div>
                 ))}
               </div>
@@ -572,16 +643,23 @@ export default function GeneratorPage() {
               <div className="gen-results-hdr">
                 <div className="gen-results-title">Draw Results</div>
                 <div className="gen-results-sub">
-                  {doneResults.length} participant{doneResults.length !== 1 ? "s" : ""} — teams assigned by wheel
+                  {validParticipants.length} participant{validParticipants.length !== 1 ? "s" : ""}
+                  {teamsPerPerson > 1 ? ` · ${teamsPerPerson} teams each` : ""} — assigned by wheel
                 </div>
               </div>
               <ol className="gen-results-list">
-                {doneResults.map((r, i) => (
-                  <li key={i} className="gen-result-row">
+                {Array.from(groupByParticipant(doneResults)).map(([name, assignedTeams], i) => (
+                  <li key={name} className="gen-result-row gen-result-row-multi">
                     <span className="gen-result-num">{i + 1}</span>
-                    <span className="gen-result-name">{r.participant}</span>
+                    <span className="gen-result-name">{name}</span>
                     <span className="gen-result-arrow" aria-hidden="true">→</span>
-                    <span className="gen-result-team">{r.team}</span>
+                    <span className="gen-result-team">
+                      {assignedTeams.length === 1
+                        ? assignedTeams[0]
+                        : assignedTeams.map((t, ti) => (
+                            <span key={ti} className="gen-result-multi-team">{t}</span>
+                          ))}
+                    </span>
                   </li>
                 ))}
               </ol>

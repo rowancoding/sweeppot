@@ -708,6 +708,14 @@ body.light-mode .gen-draw-btn { color: #fff; }
 .gen-bottom-text { font-size: 0.8rem; color: var(--muted); }
 .gen-bottom-link { font-family: var(--font-barlow-condensed), sans-serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); text-decoration: none; white-space: nowrap; }
 .gen-bottom-link:hover { text-decoration: underline; }
+.gen-tpp-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.9rem 1.1rem; background: var(--dark3); border: 1px solid var(--border); margin-bottom: 0.75rem; flex-wrap: wrap; }
+.gen-tpp-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; }
+.gen-tpp-input { width: 4rem; text-align: center; flex-shrink: 0; }
+.gen-tpp-hint { font-size: 0.7rem; color: var(--dim); }
+.gen-spin-team-num { font-size: 0.72em; color: var(--muted); margin-left: 0.5rem; font-weight: 400; letter-spacing: 0; text-transform: none; font-family: var(--font-barlow), sans-serif; }
+.gen-result-row-multi { align-items: flex-start; }
+.gen-result-multi-team { display: block; }
+.gen-result-multi-team + .gen-result-multi-team { margin-top: 0.15rem; }
 .gen-spin-top { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; width: 100%; padding: 1.5rem 0 1rem; }
 .gen-spin-stage { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; padding: 1rem 0 2.5rem; }
 .gen-spin-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
