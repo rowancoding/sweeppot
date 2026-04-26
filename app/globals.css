@@ -685,6 +685,7 @@ body.light-mode .gen-draw-btn { color: #fff; }
 .gen-reset-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 0.6rem 1.5rem; font-family: var(--font-barlow-condensed), sans-serif; font-weight: 600; font-size: 0.84rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
 .gen-reset-btn:hover { border-color: var(--green); color: var(--green); }
 .gen-hint { font-size: 0.72rem; color: var(--dim); text-align: center; }
+.gen-hint-info { color: var(--muted); font-size: 0.78rem; }
 .gen-results { background: var(--card); border: 1px solid var(--border); margin-bottom: 2rem; position: relative; overflow: hidden; animation: rca 0.35s ease; }
 .gen-results::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--green), transparent); }
 .gen-results-hdr { padding: 1.1rem 1.5rem 0.9rem; border-bottom: 1px solid var(--border); }

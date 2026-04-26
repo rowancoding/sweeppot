@@ -102,9 +102,8 @@ function groupByParticipant(results: DrawResult[]): Map<string, string[]> {
 
 export default function WorldCupGeneratorPage() {
   // ── Form state ────────────────────────────────────────────────
-  const [participants, setParticipants]     = useState<string[]>(["", ""]);
-  const [teams, setTeams]                   = useState<string[]>([...WC2026_TEAMS]);
-  const [teamsPerPerson, setTeamsPerPerson] = useState(1);
+  const [participants, setParticipants] = useState<string[]>(["", ""]);
+  const [teams, setTeams]               = useState<string[]>([...WC2026_TEAMS]);
   const [newParticipant, setNewParticipant] = useState("");
   const [newTeam, setNewTeam]               = useState("");
 
@@ -124,16 +123,10 @@ export default function WorldCupGeneratorPage() {
 
   const validParticipants = participants.filter((p) => p.trim() !== "");
   const validTeams        = teams.filter((t) => t.trim() !== "");
-  const requiredTeams     = validParticipants.length * teamsPerPerson;
-  const maxTeamsPerPerson = Math.max(1, validParticipants.length > 0
-    ? Math.floor(validTeams.length / validParticipants.length)
-    : 10);
-
-  // Exact match required: every team must be assigned to exactly one slot
-  const teamsMismatch = validParticipants.length >= 2 && teamsPerPerson >= 1
-    && validTeams.length > 0 && validTeams.length !== requiredTeams;
-  const canDraw = validParticipants.length >= 2 && teamsPerPerson >= 1
-    && validTeams.length === requiredTeams;
+  // Auto-divide teams across participants; first `remainder` participants get one extra
+  const teamsPerPerson = validParticipants.length >= 2 ? Math.floor(validTeams.length / validParticipants.length) : 0;
+  const remainder      = validParticipants.length >= 2 ? validTeams.length % validParticipants.length : 0;
+  const canDraw        = validParticipants.length >= 2 && validTeams.length >= validParticipants.length;
 
   // ── Canvas wheel drawing ──────────────────────────────────────
 
@@ -233,22 +226,19 @@ export default function WorldCupGeneratorPage() {
     tInputRef.current?.focus();
   }
 
-  function handleTeamsPerPersonChange(raw: string) {
-    const val = parseInt(raw, 10);
-    if (isNaN(val)) return;
-    setTeamsPerPerson(Math.max(1, val));
-  }
-
   // ── Draw flow ─────────────────────────────────────────────────
 
-  // Pre-compute all assignments (participants × teamsPerPerson spins) then enter spin phase
+  // Pre-compute all assignments — shuffle participants so extra teams are randomly distributed
   function runDraw() {
     if (!canDraw) return;
-    const shuffled = shuffle(validTeams);
+    const shuffledTeams = shuffle(validTeams);
+    const shuffledParticipants = shuffle([...validParticipants]);
     const draw: DrawResult[] = [];
-    validParticipants.forEach((name, pi) => {
-      for (let t = 0; t < teamsPerPerson; t++) {
-        draw.push({ participant: name, team: shuffled[pi * teamsPerPerson + t] });
+    let teamIdx = 0;
+    shuffledParticipants.forEach((name, pi) => {
+      const count = pi < remainder ? teamsPerPerson + 1 : teamsPerPerson;
+      for (let t = 0; t < count; t++) {
+        draw.push({ participant: name, team: shuffledTeams[teamIdx++] });
       }
     });
     setAssignments(draw);
@@ -319,23 +309,25 @@ export default function WorldCupGeneratorPage() {
     setDoneResults([]);
     setParticipants(["", ""]);
     setTeams([...WC2026_TEAMS]);
-    setTeamsPerPerson(1);
     setNewParticipant("");
     setNewTeam("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // ── Spinning phase derived values ─────────────────────────────
-  const spinWithin       = teamsPerPerson > 1 ? spinIdx % teamsPerPerson : 0;
   const currentName      = assignments[spinIdx]?.participant ?? "";
   const nextAssignment   = assignments[spinIdx + 1];
   const isLastSpin       = spinIdx + 1 >= assignments.length;
   const nextIsSamePerson = !isLastSpin && nextAssignment?.participant === currentName;
+  // Position within this participant's consecutive spins
+  const currentPersonStart = assignments.findIndex((a) => a.participant === currentName);
+  const spinWithin         = currentPersonStart >= 0 ? spinIdx - currentPersonStart : 0;
+  const currentPersonTotal = assignments.filter((a) => a.participant === currentName).length;
 
   const advanceBtnLabel = isLastSpin
     ? "See full results →"
     : nextIsSamePerson
-      ? `Spin again for ${currentName} (team ${spinWithin + 2} of ${teamsPerPerson}) →`
+      ? `Spin again for ${currentName} (team ${spinWithin + 2} of ${currentPersonTotal}) →`
       : `Next → spin for ${nextAssignment?.participant}`;
 
   // ── Render ────────────────────────────────────────────────────
@@ -477,43 +469,19 @@ export default function WorldCupGeneratorPage() {
               </section>
             </div>
 
-            {/* Teams per person */}
-            <div className="gen-tpp-row">
-              <label className="gen-tpp-label" htmlFor="gen-tpp">
-                Teams per person
-              </label>
-              <input
-                id="gen-tpp"
-                className="gen-tpp-input fi"
-                type="number"
-                min={1}
-                max={maxTeamsPerPerson}
-                value={teamsPerPerson}
-                onChange={(e) => handleTeamsPerPersonChange(e.target.value)}
-              />
-              {validParticipants.length >= 2 && (
-                <span className="gen-tpp-hint">
-                  {requiredTeams} teams needed total
-                </span>
-              )}
-            </div>
-
-            {/* Validation */}
-            {teamsMismatch && (
-              <div className="gen-warning" role="alert">
-                Need exactly {requiredTeams} teams ({validParticipants.length} players × {teamsPerPerson} each) — you have {validTeams.length}.
-              </div>
+            {/* Uneven distribution notice */}
+            {canDraw && remainder > 0 && (
+              <p className="gen-hint gen-hint-info" role="status">
+                {validTeams.length} teams will be assigned randomly — {remainder} participant{remainder !== 1 ? "s" : ""} will get one extra team.
+              </p>
             )}
 
             <div className="gen-actions">
               <button className="gen-draw-btn" onClick={runDraw} disabled={!canDraw}>
                 Generate Draw →
               </button>
-              {!canDraw && !teamsMismatch && (
-                <p className="gen-hint">
-                  Add at least 2 participants. Remove teams until the count matches your group size
-                  (or raise &ldquo;teams per person&rdquo;).
-                </p>
+              {!canDraw && (
+                <p className="gen-hint">Add at least 2 participants to continue.</p>
               )}
             </div>
           </>
@@ -538,9 +506,9 @@ export default function WorldCupGeneratorPage() {
               <span className="player-lbl">Spinning for:</span>
               <div className="player-name-disp">
                 {currentName}
-                {teamsPerPerson > 1 && (
+                {currentPersonTotal > 1 && (
                   <span className="gen-spin-team-num">
-                    team {spinWithin + 1} of {teamsPerPerson}
+                    team {spinWithin + 1} of {currentPersonTotal}
                   </span>
                 )}
               </div>
@@ -586,7 +554,7 @@ export default function WorldCupGeneratorPage() {
             {!landed && !isSpinning && (
               <div className="result-placeholder">
                 Spin to reveal {currentName}&apos;s
-                {teamsPerPerson > 1 ? ` team ${spinWithin + 1}` : " team"}
+                {currentPersonTotal > 1 ? ` team ${spinWithin + 1}` : " team"}
               </div>
             )}
 
@@ -629,8 +597,7 @@ export default function WorldCupGeneratorPage() {
               <div className="gen-results-hdr">
                 <div className="gen-results-title">World Cup 2026 Draw Results</div>
                 <div className="gen-results-sub">
-                  {validParticipants.length} participant{validParticipants.length !== 1 ? "s" : ""}
-                  {teamsPerPerson > 1 ? ` · ${teamsPerPerson} teams each` : ""} — assigned by wheel
+                  {validParticipants.length} participant{validParticipants.length !== 1 ? "s" : ""} — assigned by wheel
                 </div>
               </div>
               <ol className="gen-results-list">
