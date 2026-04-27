@@ -295,7 +295,7 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
               const prizePotEl = document.createElement("div");
               prizePotEl.style.cssText = "text-align:center;margin-top:1rem;padding:0.75rem;background:rgba(198,241,53,0.06);border:1px solid rgba(198,241,53,0.25);";
               prizePotEl.innerHTML =
-                '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Prize Pot</div>'
+                '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Pool Total</div>'
                 + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:2rem;color:var(--green);">$' + prize + " AUD</div>"
                 + '<div style="font-size:0.65rem;color:var(--dim);">Funds released to whoever\'s team wins the competition — paid automatically and securely</div>';
               roundEl.appendChild(prizePotEl);
@@ -1058,13 +1058,13 @@ export default function SweeppotApp() {
               <div className="ipc-stats">
                 <div className="ipc-stat"><div className="ipc-sv">8</div><div className="ipc-sl">Players</div></div>
                 <div className="ipc-stat"><div className="ipc-sv">7</div><div className="ipc-sl">Spots Left</div></div>
-                <div className="ipc-stat"><div className="ipc-sv">$20</div><div className="ipc-sl">Entry fee AUD</div></div>
+                <div className="ipc-stat"><div className="ipc-sv">$20</div><div className="ipc-sl">Contribution AUD</div></div>
                 <div className="ipc-stat"><div className="ipc-sv">$160</div><div className="ipc-sl">Total Pot</div></div>
               </div>
             </div>
             <div className="invite-action">
               <h3>You've been invited to join</h3>
-              <p>Pay your entry fee to reserve your spot. Once everyone has joined — or the deadline arrives — the wheel spins for all players simultaneously. No one sees any teams until that shared reveal moment.</p>
+              <p>Make your contribution to reserve your spot. Once everyone has joined — or the deadline arrives — the wheel spins for all players simultaneously. No one sees any teams until that shared reveal moment.</p>
               <div>
                 <div style={{ fontSize: "0.69rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--green)", marginBottom: "0.45rem" }}>Your Name</div>
                 <input className="fi" type="text" placeholder="Enter your name" defaultValue="You" style={{ width: 220 }} />
