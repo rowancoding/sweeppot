@@ -51,10 +51,10 @@ const INVITED_POOLS: InvitedPool[] = [
 
 const HOW_STEPS = [
   { n:1, title:"Create your sweepstake",    desc:"Choose the tournament, set the entry fee or make it free, pick your player limit, and send the invite link." },
-  { n:2, title:"Everyone pays up front",    desc:"Each player pays their entry fee by card. Funds are held securely in escrow until the winner is confirmed. A 10% service fee covers payment processing and platform costs — every penny of your entry fee goes into the prize pot." },
+  { n:2, title:"Everyone pays up front",    desc:"Each player makes their contribution by card. Funds are held securely until the winner is confirmed. A 10% service fee covers payment processing and platform costs — every penny of your contribution goes into the pool total." },
   { n:3, title:"The draw happens together", desc:"When everyone is in or the deadline arrives, teams are drawn for all players at the same moment." },
   { n:4, title:"Follow the tournament live",desc:"Your sweepstake page tracks every match. See who is still in, who has been knocked out, and who is leading." },
-  { n:5, title:"Winner paid automatically", desc:"When the final whistle blows, the prize pot goes straight to the winner. No chasing. No awkward conversations." },
+  { n:5, title:"Funds released automatically", desc:"When the final whistle blows, the pool total is released to the winner. No chasing. No awkward conversations." },
 ];
 
 // ─────────────────────────────────────────────
@@ -93,15 +93,15 @@ function launchConfetti() {
 }
 
 const NARRATOR = [
-  {step:'Step 1 of 6', text:'8 friends join the pool and pay their entry fee upfront — funds are held securely until the tournament ends'},
+  {step:'Step 1 of 6', text:'8 friends join the pool and make their contribution upfront — funds are held securely until the tournament ends'},
   {step:'Step 2 of 6', text:"Everyone's in. Teams are assigned randomly and fairly by Sweeppot — no one can influence the draw"},
   {step:'Step 3 of 6', text:"Spin the wheel to reveal your team — it's pure chance, assigned the moment the pool fills"},
   {step:'Step 3 of 6', text:'Every player gets a different team. No two players share a team'},
   {step:'Step 4 of 6', text:'Your team enters the tournament — follow their progress through every knockout round'},
-  {step:'Step 5 of 6', text:'Still in it — every win brings you closer to the prize pot'},
-  {step:'Step 5 of 6', text:'Into the semis. The full prize pot is waiting'},
+  {step:'Step 5 of 6', text:'Still in it — every win brings you closer to the pool total'},
+  {step:'Step 5 of 6', text:'Into the semis. The full pool total is waiting'},
   {step:'Step 6 of 6', text:'One game from winning everything — this is what everyone paid in for'},
-  {step:'Step 6 of 6', text:'Your team won the tournament. Your prize is being processed and will be paid automatically to your account via Stripe.'},
+  {step:'Step 6 of 6', text:'Your team won the tournament. Funds are being released automatically to your account.'},
 ];
 
 function showNarrator(i: number) {
@@ -141,13 +141,13 @@ function showDemoPaymentInterstitial(winAmt: number, team: Team) {
       + '</div>'
       + '<div style="height:1px;background:var(--border);margin:0.5rem 0;"></div>'
       + '<div style="display:flex;align-items:baseline;gap:0.5rem;">'
-        + '<span style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">Prize pot</span>'
+        + '<span style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">Pool total</span>'
         + '<span style="font-family:var(--font-bebas-neue),sans-serif;font-size:1.8rem;color:var(--green);letter-spacing:0.03em;">$' + (winAmt || 0) + ' AUD</span>'
       + '</div>'
     + '</div>'
     + '<div style="background:rgba(198,241,53,0.04);border:1px solid rgba(198,241,53,0.22);padding:1.1rem 1.4rem;">'
       + '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:0.5rem;">Payment Status</div>'
-      + '<div style="font-size:0.95rem;color:#ECEFF1;line-height:1.7;font-weight:500;">Your prize is being processed and will be credited automatically to the payment method you used to enter. <span style="color:rgba(198,241,53,0.85);">Payments are processed automatically and securely via Stripe.</span></div>'
+      + '<div style="font-size:0.95rem;color:#ECEFF1;line-height:1.7;font-weight:500;">Funds are being released automatically to you — paid securely and instantly.</div>'
     + '</div>'
     + '<div id="payInterActions" style="text-align:center;margin-top:0.5rem;"></div>'
     + '</div>';
@@ -172,7 +172,7 @@ function showDemoWinnerBanner(winAmt: number, team: Team) {
     + '<div style="font-size:0.88rem;color:var(--muted);margin-bottom:0.8rem;">' + (t.f || "") + "&nbsp;" + t.n + " won the tournament</div>"
     + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:3rem;color:var(--gold);letter-spacing:0.03em;margin-bottom:1rem;">' + (winAmt > 0 ? "$" + winAmt + " AUD" : "Winner!") + " </div>"
     + '<div style="font-size:0.95rem;color:#ECEFF1;line-height:1.75;margin-bottom:1.6rem;padding:0 0.5rem;">'
-      + (winAmt > 0 ? "Your winnings have been processed and will be credited to the card or account you used to enter. Payments are processed automatically and securely via Stripe." : "This was a free sweepstake — bragging rights this time. Set up a paid pool to play for real.")
+      + (winAmt > 0 ? "Funds released to you — paid automatically and securely." : "This was a free sweepstake — bragging rights this time. Set up a paid pool to play for real.")
     + '</div>'
     + '<button onclick="window.__sweeppotGoHome()" style="background:var(--green);color:var(--dark);border:none;padding:0.75rem 1.9rem;font-family:var(--font-barlow-condensed),sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);width:100%);">Start Your Own Sweepstake →</button>'
     + "</div>";
@@ -297,7 +297,7 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
               prizePotEl.innerHTML =
                 '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Prize Pot</div>'
                 + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:2rem;color:var(--green);">$' + prize + " AUD</div>"
-                + '<div style="font-size:0.65rem;color:var(--dim);">Winner takes all — paid automatically and securely via Stripe</div>';
+                + '<div style="font-size:0.65rem;color:var(--dim);">Funds released to whoever\'s team wins the competition — paid automatically and securely</div>';
               roundEl.appendChild(prizePotEl);
               // Scroll prize pot to center, clear of any bottom UI
               setTimeout(() => prizePotEl.scrollIntoView({ behavior: "smooth", block: "center" }), 200);
@@ -517,7 +517,7 @@ function PoolCard({ pool }: { pool: DemoPool }) {
       <div className="pc-comp">{pool.icon} {pool.compLabel}</div>
       <div className="pc-stats">
         <div><div className="pc-sv">{pool.spotsFilled}/{pool.spotsTotal}</div><div className="pc-sl">Players</div></div>
-        <div><div className="pc-sv">{pool.pot > 0 ? `$${pool.pot}` : "Free"}</div><div className="pc-sl">{pool.pot > 0 ? "Prize Pot" : "Entry"}</div></div>
+        <div><div className="pc-sv">{pool.pot > 0 ? `$${pool.pot}` : "Free"}</div><div className="pc-sl">{pool.pot > 0 ? "Pool Total" : "Entry"}</div></div>
         <div><div className="pc-sv">{deadlineVal}</div><div className="pc-sl">{pool.status === "waiting" ? "Deadline" : "Status"}</div></div>
       </div>
       <div className="pc-arrow">›</div>
@@ -774,7 +774,7 @@ export default function SweeppotApp() {
               <div className="lp-hero-left">
                 <div className="lp-tag"><span className="lp-dot" />FIFA World Cup 2026 ready</div>
                 <h1 className="lp-h1">The <span className="lp-accent">sweepstake</span><br />your group actually finishes.</h1>
-                <p className="lp-sub">No spreadsheets. No chasing payments. No arguments about who owes what. Sweeppot runs your football sweepstake end-to-end — everyone pays up front, teams are drawn fairly, and the winner collects automatically.</p>
+                <p className="lp-sub">No spreadsheets. No chasing payments. No arguments about who owes what. Sweeppot runs your football sweepstake end-to-end — everyone pays up front, teams are drawn fairly, and funds are released to the winner automatically.</p>
                 <div className="lp-actions">
                   <button className="lp-btn-primary" onClick={() => window.location.href = isLoggedIn ? "/pool/create" : "/auth/signup"}>
                     {isLoggedIn ? "Create a Sweepstake →" : "Get Started →"}
@@ -782,26 +782,26 @@ export default function SweeppotApp() {
                   <button className="lp-btn-ghost" onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })}>See how it works ↓</button>
                 </div>
                 <div className="lp-stats">
-                  <div className="lp-stat"><div className="lp-stat-n" style={{ fontSize: "0.85rem" }}>No chasing</div><div className="lp-stat-l">Automated from entry to payout</div></div>
+                  <div className="lp-stat"><div className="lp-stat-n" style={{ fontSize: "0.85rem" }}>No chasing</div><div className="lp-stat-l">Automated from entry to payment</div></div>
                   <div className="lp-stat-div" />
-                  <div className="lp-stat"><div className="lp-stat-n" style={{ fontSize: "0.85rem" }}>Auto-paid</div><div className="lp-stat-l">Winner paid via Stripe — secure &amp; instant</div></div>
+                  <div className="lp-stat"><div className="lp-stat-n" style={{ fontSize: "0.85rem" }}>Auto-paid</div><div className="lp-stat-l">AUTO-PAID — FUNDS RELEASED SECURELY &amp; INSTANTLY</div></div>
                   <div className="lp-stat-div" />
-                  <div className="lp-stat"><div className="lp-stat-n">10%</div><div className="lp-stat-l">Service fee — every entry goes into the pot</div></div>
+                  <div className="lp-stat"><div className="lp-stat-n">10%</div><div className="lp-stat-l">Service fee — every contribution goes to the pool total</div></div>
                 </div>
-                <div className="lp-stripe-badge">🛡️ Payments secured by <strong>Stripe</strong> — entry fees held in escrow until the tournament ends</div>
+                <div className="lp-stripe-badge">🛡️ Funds held securely until the competition concludes</div>
               </div>
               <div className="lp-hero-right">
                 <div className="lp-mock-card">
                   <div className="lp-mock-hdr"><span className="lp-mock-logo">Sweeppot</span><span className="lp-mock-pill">🌍 WC 2026</span></div>
                   <div className="lp-mock-pool">The Office Sweep</div>
-                  <div className="lp-mock-meta">8 players · $160 prize pot</div>
+                  <div className="lp-mock-meta">8 players · $160 pool total</div>
                   <div className="lp-mock-reveal">
                     <div className="lp-mock-reveal-title">🎉 The Draw Has Happened!</div>
                     <div className="lp-mock-team">🇧🇷 Brazil <span className="lp-tier-pill">Tier 1</span></div>
                     <div className="lp-mock-team">🇦🇺 Australia <span className="lp-tier-pill">Tier 2</span></div>
                     <div className="lp-mock-yours">⭐ Your teams</div>
                   </div>
-                  <div className="lp-mock-payout">Your payout: <strong>$144.00</strong></div>
+                  <div className="lp-mock-payout">Your share: <strong>$144.00</strong></div>
                 </div>
               </div>
             </div>
@@ -950,7 +950,7 @@ export default function SweeppotApp() {
           <div className="lp-footer">
             <div className="lp-footer-logo">Sweeppot</div>
             <div className="lp-footer-tagline">Peer-to-peer football sweepstakes — escrowed, automated, fair.</div>
-            <div className="lp-footer-legal">Sweeppot facilitates private sweepstakes between invited participants. Entry fees are held securely in escrow and released automatically to the winner. A free entry option is available on all sweepstakes. 18+ only. Please participate responsibly.</div>
+            <div className="lp-footer-legal">Sweeppot facilitates private sweepstakes between invited participants. Contributions are held securely and released automatically to the winner. A free entry option is available on all sweepstakes. 18+ only. Please participate responsibly.</div>
             <div className="lp-footer-links">
               <a href="/terms" className="lp-footer-link">Terms of Service</a>
             </div>

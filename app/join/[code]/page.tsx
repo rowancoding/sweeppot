@@ -161,7 +161,7 @@ export default async function JoinPage({
                 <p style={{ fontSize: "0.7rem", color: "var(--muted)", margin: 0 }}>
                   18+ only. By joining you agree to the Sweeppot Terms.
                   {pool.bet_aud > 0 &&
-                    " Payment held in escrow — auto-refunded if pool doesn't fill before the deadline."}
+                    " Payment held securely — auto-refunded if pool doesn't fill before the deadline."}
                 </p>
               </div>
             ) : (

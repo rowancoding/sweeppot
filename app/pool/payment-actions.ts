@@ -81,7 +81,7 @@ export async function createCheckoutSession(
       {
         price_data: {
           currency,
-          product_data: { name: `${pool.name} — Entry Fee` },
+          product_data: { name: `${pool.name} — Contribution` },
           unit_amount: entryAmountCents,
         },
         quantity: 1,

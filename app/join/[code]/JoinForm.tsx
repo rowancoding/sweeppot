@@ -59,7 +59,7 @@ function PayForm({ poolId, betAud, inviteCode }: Props) {
         padding: "0.75rem 0.9rem", marginBottom: "0.75rem", fontSize: "0.78rem", lineHeight: 1.8,
       }}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span style={{ color: "var(--muted)" }}>Entry fee</span>
+          <span style={{ color: "var(--muted)" }}>Contribution</span>
           <span>${betAud.toFixed(2)} AUD</span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>

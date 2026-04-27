@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "Sweeppot Terms of Service — entry fees, draws, payouts, eligibility, and platform rules.",
+    "Sweeppot Terms of Service — contributions, draws, payouts, eligibility, and platform rules.",
   robots: { index: true, follow: false },
 };
 
@@ -12,7 +12,7 @@ const SECTIONS = [
   {
     n: 1,
     title: "About Sweeppot",
-    body: "Sweeppot is a peer-to-peer football sweepstake platform that allows users to create and join private sweepstake pools tied to football tournaments. Entry fees are held in escrow via Stripe and paid out automatically to the winner.",
+    body: "Sweeppot is a peer-to-peer football sweepstake platform that allows users to create and join private sweepstake pools tied to football tournaments. Contributions are held securely by our payment processor and released automatically to the winner.",
   },
   {
     n: 2,
@@ -36,18 +36,18 @@ const SECTIONS = [
   },
   {
     n: 6,
-    title: "Entry Fees and Payments",
-    body: "Entry fees are denominated in AUD or GBP. Payments are processed securely via Stripe. Entry fees are held in escrow until the tournament concludes. Free pools (£0 / $0 entry) are supported — no money changes hands in free pools. Entry fees are authorised at the time of joining and held until the pool fills or the entry deadline is met. Cards are not charged until that point.",
+    title: "Contributions and Payments",
+    body: "Contributions are denominated in AUD or GBP. Payments are processed securely via Stripe. Contributions are held securely until the tournament concludes. Free pools (£0 / $0 entry) are supported — no money changes hands in free pools. Contributions are authorised at the time of joining and held until the pool fills or the entry deadline is met. Cards are not charged until that point.",
   },
   {
     n: 7,
     title: "Platform Fee",
-    body: "Sweeppot charges a 10% service fee on all paid pools. The 10% service fee is deducted from the prize pot before payout. Stripe payment processing fees (2.9% + A$0.30 or £0.30) are added to each participant's entry fee at the time of payment and are non-refundable. Free pools are not subject to any fee.",
+    body: "Sweeppot charges a 10% service fee on all paid pools. The 10% service fee is deducted from the pool total before payment release. Stripe payment processing fees (2.9% + A$0.30 or £0.30) are added to each participant's contribution at the time of payment and are non-refundable. Free pools are not subject to any fee.",
   },
   {
     n: 8,
     title: "Payouts",
-    body: "The winner is the participant holding the team that wins the tournament. Payout is automatic once the result is confirmed. In the event that the winning team is disqualified or withdrawn from the tournament after the draw, the prize is awarded to the holder of the runner-up team. There must be exactly one runner-up for this rule to apply.",
+    body: "The winner is the participant holding the team that wins the tournament. Payment release is automatic once the result is confirmed. In the event that the winning team is disqualified or withdrawn from the tournament after the draw, the funds are released to the holder of the runner-up team. There must be exactly one runner-up for this rule to apply.",
   },
   {
     n: 9,

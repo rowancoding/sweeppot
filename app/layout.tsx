@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     template: "%s | Sweeppot",
   },
   description:
-    "Run your football sweepstake end-to-end. Everyone pays up front, teams are drawn fairly, and the winner is paid automatically via Stripe. FIFA World Cup 2026 ready.",
+    "Run your football sweepstake end-to-end. Everyone pays up front, teams are drawn fairly, and funds are released automatically to the winner. FIFA World Cup 2026 ready.",
   icons: {
     icon: "/favicon.png",
     apple: "/apple-touch-icon.png",

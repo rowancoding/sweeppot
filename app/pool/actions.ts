@@ -57,7 +57,7 @@ export async function createPool(
     return { error: "Player count must divide evenly into team count." };
   }
   if (entryMode === "paid" && (isNaN(betAmt) || betAmt < 1)) {
-    return { error: "Entry fee must be at least $1." };
+    return { error: "Contribution must be at least $1." };
   }
 
   const teamsPerPlayer = teamCount / playerCount;

@@ -654,7 +654,7 @@ export default function GeneratorPage() {
             <div className="gen-convert">
               <div className="gen-convert-title">Want to make this official?</div>
               <p className="gen-convert-body">
-                Sweeppot handles payments, holds entry fees securely, and pays the winner automatically.
+                Sweeppot handles payments, holds contributions securely, and releases funds to the winner automatically.
                 No spreadsheets, no chasing people up.
               </p>
               <Link href="/auth/signup" className="lp-btn-primary" style={{ textDecoration: "none" }}>

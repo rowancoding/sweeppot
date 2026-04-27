@@ -48,7 +48,7 @@ const DRAW_MODE_DESCS: Record<string, string> = {
 
 const STEP_HEADINGS: Record<Step, [string, string]> = {
   1: ["Choose Competition", "Select tournament and pool stage"],
-  2: ["Players & Entry Fee", "Set pool size and entry fee"],
+  2: ["Players & Contribution", "Set pool size and contribution amount"],
   3: ["Pool Settings", "Deadline, visibility and rules"],
   4: ["Review & Create", "Check everything before going live"],
 };
@@ -336,7 +336,7 @@ export default function CreatePool() {
 
                 <div className="field">
                   <div className="fl">
-                    Entry fee per Player <span className="fh">AUD</span>
+                    Contribution per Player <span className="fh">AUD</span>
                   </div>
                   <div className="entry-mode-toggle">
                     <label>
@@ -398,7 +398,7 @@ export default function CreatePool() {
 
                   {entryMode === "free" && (
                     <div className="free-entry-note show">
-                      ✓ Free sweepstake — no entry fee, no prize pot. Great for office fun, casual
+                      ✓ Free sweepstake — no contribution required, no pool total. Great for office fun, casual
                       groups, or testing the platform.
                     </div>
                   )}
@@ -601,7 +601,7 @@ export default function CreatePool() {
                     <div className="rev-val">{teamsPerPlayer}{teamsPerPlayer > 1 ? " (tier split)" : ""}</div>
                   </div>
                   <div className="rev-item">
-                    <div className="rev-key">Entry Fee</div>
+                    <div className="rev-key">Contribution</div>
                     <div className="rev-val rv-g">
                       {entryMode === "free" ? "Free" : `$${betAmt.toFixed(0)} AUD each`}
                     </div>
@@ -609,7 +609,7 @@ export default function CreatePool() {
                   {entryMode === "paid" && (
                     <>
                       <div className="rev-item">
-                        <div className="rev-key">Prize Pot</div>
+                        <div className="rev-key">Pool Total</div>
                         <div className="rev-val rv-o">${pot.toFixed(0)} AUD</div>
                       </div>
                       <div className="rev-item">

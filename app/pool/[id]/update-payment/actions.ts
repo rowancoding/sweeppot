@@ -64,7 +64,7 @@ export async function createReauthorizeSession(
       {
         price_data: {
           currency: "aud",
-          product_data: { name: `${pool.name} — Entry Fee (Re-authorisation)` },
+          product_data: { name: `${pool.name} — Contribution (Re-authorisation)` },
           unit_amount: entryAmountCents,
         },
         quantity: 1,

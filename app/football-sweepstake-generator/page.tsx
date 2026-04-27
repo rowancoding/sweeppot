@@ -39,7 +39,7 @@ const FAQ_SCHEMA = {
       name: "How do I run a Champions League sweepstake?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Select the Champions League preset to load the current knockout-round teams, enter each participant's name, then click Generate Draw. The spin wheel randomly assigns one team to each player. Share the results — whoever holds the winning club takes the prize pot. For a paid sweep with automatic entry collection and payouts, create a free Sweeppot pool.",
+        text: "Select the Champions League preset to load the current knockout-round teams, enter each participant's name, then click Generate Draw. The spin wheel randomly assigns one team to each player. Share the results — whoever holds the winning club takes the pool total. For a paid sweep with automatic contribution collection and payment release, create a free Sweeppot pool.",
       },
     },
     {
@@ -47,7 +47,7 @@ const FAQ_SCHEMA = {
       name: "What is a football sweepstake?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "A football sweepstake (also called a soccer sweepstake or office football sweep) is a competition where participants are randomly assigned a team from a tournament. Everyone pays an entry fee into a shared pot, and whoever holds the winning team at the end collects the prize money.",
+        text: "A football sweepstake (also called a soccer sweepstake or office football sweep) is a competition where participants are randomly assigned a team from a tournament. Everyone makes a contribution into a shared pool, and whoever holds the winning team at the end collects the pool total.",
       },
     },
     {
@@ -671,8 +671,8 @@ export default function FootballGeneratorPage() {
             <div className="gen-convert">
               <div className="gen-convert-title">Want to make it official?</div>
               <p className="gen-convert-body">
-                Sweeppot handles payments, draws, and payouts automatically — no spreadsheets,
-                no chasing entry fees. Turn your <strong>soccer sweepstake</strong> into a proper
+                Sweeppot handles payments, draws, and payment release automatically — no spreadsheets,
+                no chasing contributions. Turn your <strong>soccer sweepstake</strong> into a proper
                 paid pool in minutes.
               </p>
               <Link href="/auth/signup" className="lp-btn-primary" style={{ textDecoration: "none" }}>
@@ -693,8 +693,8 @@ export default function FootballGeneratorPage() {
                 Select the <strong>Champions League</strong> preset to load the current knockout-round
                 teams, enter each participant&apos;s name, then click <em>Generate Draw</em>. The spin
                 wheel randomly assigns one club to each player. Share the screen or screenshot the
-                results — whoever holds the winning team takes the pot. For a paid{" "}
-                <strong>Champions League sweep</strong> with automatic entry collection and payouts,
+                results — whoever holds the winning team takes the pool total. For a paid{" "}
+                <strong>Champions League sweep</strong> with automatic contribution collection and payment release,
                 create a free Sweeppot pool.
               </p>
             </div>
@@ -706,8 +706,8 @@ export default function FootballGeneratorPage() {
               <p>
                 A <strong>football sweepstake</strong> (also called a <strong>soccer sweepstake</strong>{" "}
                 or office football sweep) is a competition where participants are randomly assigned a
-                team from a tournament. Everyone pays an entry fee into a shared prize pot, and whoever
-                holds the winning team at the end collects the winnings. It&apos;s the most popular way
+                team from a tournament. Everyone makes a contribution into a shared pool, and whoever
+                holds the winning team at the end collects the pool total. It&apos;s the most popular way
                 to get an office involved in a major football competition.
               </p>
             </div>
