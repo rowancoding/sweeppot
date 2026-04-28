@@ -398,7 +398,7 @@ export default function CreatePool() {
 
                   {entryMode === "free" && (
                     <div className="free-entry-note show">
-                      ✓ Free sweepstake — no contribution required, no pool total. Great for office fun, casual
+                      ✓ Free sweepstake — no contribution required, no pot. Great for office fun, casual
                       groups, or testing the platform.
                     </div>
                   )}
@@ -609,7 +609,7 @@ export default function CreatePool() {
                   {entryMode === "paid" && (
                     <>
                       <div className="rev-item">
-                        <div className="rev-key">Pool Total</div>
+                        <div className="rev-key">Pot</div>
                         <div className="rev-val rv-o">${pot.toFixed(0)} AUD</div>
                       </div>
                       <div className="rev-item">

@@ -38,7 +38,7 @@ const FAQ_SCHEMA = {
       name: "How do I run a World Cup 2026 sweepstake?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Enter each participant's name, then click Generate Draw. The wheel spins to randomly assign one of the 48 FIFA World Cup 2026 teams to each player. Share the results with your group — whoever holds the winning nation takes the pool total.",
+        text: "Enter each participant's name, then click Generate Draw. The wheel spins to randomly assign one of the 48 FIFA World Cup 2026 teams to each player. Share the results with your group — whoever holds the winning nation takes the pot.",
       },
     },
     {
@@ -54,7 +54,7 @@ const FAQ_SCHEMA = {
       name: "What is a football sweepstake?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "A football sweepstake (also called a soccer sweepstake or office sweep) is a competition where participants are randomly assigned a team in a tournament. If your team wins the tournament, you win the pool total.",
+        text: "A football sweepstake (also called a soccer sweepstake or office sweep) is a competition where participants are randomly assigned a team in a tournament. If your team wins the tournament, you win the pot.",
       },
     },
     {
@@ -687,7 +687,7 @@ export default function WorldCupGeneratorPage() {
                 A <strong>football sweepstake</strong> (also called a <strong>soccer sweepstake</strong>{" "}
                 or office sweep) is a competition where participants are randomly assigned a team from a
                 tournament. Each person makes a contribution into a shared pool. If your team wins —
-                or reaches a certain stage — you win all or part of the pool total. It&apos;s one of the
+                or reaches a certain stage — you win all or part of the pot. It&apos;s one of the
                 most popular ways to get a whole office involved in a major football tournament.
               </p>
             </div>

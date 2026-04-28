@@ -51,10 +51,10 @@ const INVITED_POOLS: InvitedPool[] = [
 
 const HOW_STEPS = [
   { n:1, title:"Create your sweepstake",    desc:"Choose the tournament, set the entry fee or make it free, pick your player limit, and send the invite link." },
-  { n:2, title:"Everyone pays up front",    desc:"Each player makes their contribution by card. Funds are held securely until the winner is confirmed. A 10% service fee covers payment processing and platform costs — every penny of your contribution goes into the pool total." },
+  { n:2, title:"Everyone pays up front",    desc:"Each player makes their contribution by card. Funds are held securely until the winner is confirmed. A 10% service fee covers payment processing and platform costs — every penny of your contribution goes into the pot." },
   { n:3, title:"The draw happens together", desc:"When everyone is in or the deadline arrives, teams are drawn for all players at the same moment." },
   { n:4, title:"Follow the tournament live",desc:"Your sweepstake page tracks every match. See who is still in, who has been knocked out, and who is leading." },
-  { n:5, title:"Funds released automatically", desc:"When the final whistle blows, the pool total is released to the winner. No chasing. No awkward conversations." },
+  { n:5, title:"Funds released automatically", desc:"When the final whistle blows, the pot is released to the winner. No chasing. No awkward conversations." },
 ];
 
 // ─────────────────────────────────────────────
@@ -98,8 +98,8 @@ const NARRATOR = [
   {step:'Step 3 of 6', text:"Spin the wheel to reveal your team — it's pure chance, assigned the moment the pool fills"},
   {step:'Step 3 of 6', text:'Every player gets a different team. No two players share a team'},
   {step:'Step 4 of 6', text:'Your team enters the tournament — follow their progress through every knockout round'},
-  {step:'Step 5 of 6', text:'Still in it — every win brings you closer to the pool total'},
-  {step:'Step 5 of 6', text:'Into the semis. The full pool total is waiting'},
+  {step:'Step 5 of 6', text:'Still in it — every win brings you closer to the pot'},
+  {step:'Step 5 of 6', text:'Into the semis. The full pot is waiting'},
   {step:'Step 6 of 6', text:'One game from winning everything — this is what everyone paid in for'},
   {step:'Step 6 of 6', text:'Your team won the tournament. Funds are being released automatically to your account.'},
 ];
@@ -141,7 +141,7 @@ function showDemoPaymentInterstitial(winAmt: number, team: Team) {
       + '</div>'
       + '<div style="height:1px;background:var(--border);margin:0.5rem 0;"></div>'
       + '<div style="display:flex;align-items:baseline;gap:0.5rem;">'
-        + '<span style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">Pool total</span>'
+        + '<span style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">Pot</span>'
         + '<span style="font-family:var(--font-bebas-neue),sans-serif;font-size:1.8rem;color:var(--green);letter-spacing:0.03em;">$' + (winAmt || 0) + ' AUD</span>'
       + '</div>'
     + '</div>'
@@ -295,7 +295,7 @@ function runBracketAnimation(assigned: AssignedResult[], pot: number) {
               const prizePotEl = document.createElement("div");
               prizePotEl.style.cssText = "text-align:center;margin-top:1rem;padding:0.75rem;background:rgba(198,241,53,0.06);border:1px solid rgba(198,241,53,0.25);";
               prizePotEl.innerHTML =
-                '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Pool Total</div>'
+                '<div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Pot</div>'
                 + '<div style="font-family:var(--font-bebas-neue),sans-serif;font-size:2rem;color:var(--green);">$' + prize + " AUD</div>"
                 + '<div style="font-size:0.65rem;color:var(--dim);">Funds released to whoever\'s team wins the competition — paid automatically and securely</div>';
               roundEl.appendChild(prizePotEl);
@@ -517,7 +517,7 @@ function PoolCard({ pool }: { pool: DemoPool }) {
       <div className="pc-comp">{pool.icon} {pool.compLabel}</div>
       <div className="pc-stats">
         <div><div className="pc-sv">{pool.spotsFilled}/{pool.spotsTotal}</div><div className="pc-sl">Players</div></div>
-        <div><div className="pc-sv">{pool.pot > 0 ? `$${pool.pot}` : "Free"}</div><div className="pc-sl">{pool.pot > 0 ? "Pool Total" : "Entry"}</div></div>
+        <div><div className="pc-sv">{pool.pot > 0 ? `$${pool.pot}` : "Free"}</div><div className="pc-sl">{pool.pot > 0 ? "Pot" : "Entry"}</div></div>
         <div><div className="pc-sv">{deadlineVal}</div><div className="pc-sl">{pool.status === "waiting" ? "Deadline" : "Status"}</div></div>
       </div>
       <div className="pc-arrow">›</div>
@@ -786,7 +786,7 @@ export default function SweeppotApp() {
                   <div className="lp-stat-div" />
                   <div className="lp-stat"><div className="lp-stat-n" style={{ fontSize: "0.85rem" }}>Auto-paid</div><div className="lp-stat-l">AUTO-PAID — FUNDS RELEASED SECURELY &amp; INSTANTLY</div></div>
                   <div className="lp-stat-div" />
-                  <div className="lp-stat"><div className="lp-stat-n">10%</div><div className="lp-stat-l">Service fee — every contribution goes to the pool total</div></div>
+                  <div className="lp-stat"><div className="lp-stat-n">10%</div><div className="lp-stat-l">Service fee — every contribution goes to the pot</div></div>
                 </div>
                 <div className="lp-stripe-badge">🛡️ Funds held securely until the competition concludes</div>
               </div>
@@ -794,7 +794,7 @@ export default function SweeppotApp() {
                 <div className="lp-mock-card">
                   <div className="lp-mock-hdr"><span className="lp-mock-logo">Sweeppot</span><span className="lp-mock-pill">🌍 WC 2026</span></div>
                   <div className="lp-mock-pool">The Office Sweep</div>
-                  <div className="lp-mock-meta">8 players · $160 pool total</div>
+                  <div className="lp-mock-meta">8 players · $160 pot</div>
                   <div className="lp-mock-reveal">
                     <div className="lp-mock-reveal-title">🎉 The Draw Has Happened!</div>
                     <div className="lp-mock-team">🇧🇷 Brazil <span className="lp-tier-pill">Tier 1</span></div>

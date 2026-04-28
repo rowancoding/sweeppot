@@ -42,7 +42,7 @@ const SECTIONS = [
   {
     n: 7,
     title: "Platform Fee",
-    body: "Sweeppot charges a 10% service fee on all paid pools. The 10% service fee is deducted from the pool total before payment release. Stripe payment processing fees (2.9% + A$0.30 or £0.30) are added to each participant's contribution at the time of payment and are non-refundable. Free pools are not subject to any fee.",
+    body: "Sweeppot charges a 10% service fee on all paid pools. The 10% service fee is deducted from the pot before payment release. Stripe payment processing fees (2.9% + A$0.30 or £0.30) are added to each participant's contribution at the time of payment and are non-refundable. Free pools are not subject to any fee.",
   },
   {
     n: 8,
